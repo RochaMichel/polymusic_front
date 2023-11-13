@@ -1,0 +1,56 @@
+<!-- <po-page-edit p-title="Orçamentos" class="p-m-0"> -->
+    <po-page-default p-title="Sessão de musica">
+        <div class="po-row">
+            <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar musica" [(ngModel)]="Musica"
+                (p-change-model)="buscaMusica()" p-icon="po-icon po-icon-search">
+            </po-input>
+    
+            <po-button class="po-m-5" style="margin-left: auto" p-label="Exportar" (p-click)="Exportacao()"></po-button>
+            <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir musica" (p-click)="criarMusica()"
+                p-type="primary">
+            </po-button>
+        </div>
+        <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true" p-container="light"
+            [p-columns]="colunas" [p-items]="listaMusicas" p-container="shadow">
+        </po-table>
+    </po-page-default>
+    
+    <po-modal #modalMusica [p-primary-action]="confirmaMusica" [p-secondary-action]="cancelarMusica" p-click-out="false"
+        [p-hide-close]="true" p-title="Musica">
+        <form #ProdutoForm="ngForm">
+            <po-divider p-label="Dados gerais"></po-divider>
+            <div class="po-row">
+                <po-input class="po-md-12"name="nomeMusica" p-label="Nome da musica"          [(ngModel)]="nomeMusica"    ></po-input>
+                <po-input class="po-md-4" name="album" p-label="Album"          [(ngModel)]="album"     ></po-input>
+                <po-datepicker class="po-md-4" name="ano" [(ngModel)]="ano" p-label="Data de lançamento"></po-datepicker>
+                <po-input class="po-md-4" name="categoria" p-label="Categoria"   [(ngModel)]="categoria"  ></po-input>
+                <po-combo class="po-md-6" name="editora" p-label="editora" [ngModel]="editora"
+                (ngModelChange)="editora = $event" [p-options]="Editora"> </po-combo>      
+            </div>
+        </form>
+    </po-modal>
+    <po-modal #modalMusicaView  p-click-out="false"
+        [p-hide-close]="true" p-title="Musica">
+        <form #ProdutoForm="ngForm">
+            <po-divider p-label="Dados gerais"></po-divider>
+            <div class="po-row">
+                <po-input class="po-md-12"name="nomeMusica" p-label="Nome da musica"  p-disabled="True"  [(ngModel)]="nomeMusica"    ></po-input>
+                <po-input class="po-md-4" name="album" p-label="Album"                p-disabled="True"  [(ngModel)]="album"     ></po-input>
+                <po-datepicker class="po-md-4" name="ano" [(ngModel)]="ano" p-disabled="True" p-label="Data de lançamento"></po-datepicker>
+                <po-input class="po-md-4" name="categoria" p-label="Categoria"        p-disabled="True"  [(ngModel)]="categoria"  ></po-input>
+                <po-combo class="po-md-6" name="editora" p-label="editora"          [p-disabled]="true"  [ngModel]="editora"
+                (ngModelChange)="editora = $event" [p-options]="Editora"> </po-combo>           
+            </div>
+        </form>
+    </po-modal>
+
+    <po-modal #modalExport [p-primary-action]="confirmaExportacao" p-click-out="false" [p-hide-close]="false"
+    p-title="Exportar consulta">
+    <po-select name="select" p-label="Selecione o formato:" [p-options]="[
+    { label: 'CSV (Separado por ponto e vírgula;)', value: 'csv' },
+    { label: 'PDF', value: 'pdf' }
+  ]" [ngModel]="tipoExport"
+  (ngModelChange)="tipoExport = $event">
+    </po-select>
+</po-modal>
+    <!-- </po-page-edit> -->

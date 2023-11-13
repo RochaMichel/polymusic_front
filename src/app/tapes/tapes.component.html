@@ -1,0 +1,113 @@
+<!-- <po-page-edit p-title="Orçamentos" class="p-m-0"> -->
+<po-page-default p-title="Sessão de tapes">
+    <div class="po-row">
+        <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar tape" [(ngModel)]="Tape"
+            (p-change-model)="buscaTape()" p-icon="po-icon po-icon-search">
+        </po-input>
+        <po-button class="po-m-5" style="margin-left: auto" p-label="Exportar" (p-click)="Exportacao()"></po-button>
+        <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir tape" (p-click)="criarTape()"
+            p-type="primary">
+        </po-button>
+    </div>
+    <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
+        p-container="light" [p-columns]="colunas" [p-items]="listaTapes" p-container="shadow">
+    </po-table>
+</po-page-default>
+
+<po-modal #modalTape [p-primary-action]="confirmaTape" [p-secondary-action]="cancelarTape" p-size="xl"
+    [p-hide-close]="true" p-title="Tape">
+    <form #optionsForm="ngForm">
+        <div class="po-row">
+            <po-input class="po-md-12" name="titulo" [(ngModel)]="titulo" p-label="Titulo"></po-input>
+            <po-combo class="po-md-12" name="artista" p-label="Artista" [ngModel]="artista"
+                (ngModelChange)="artista = $event" [p-options]="Artista"> </po-combo>
+            <po-combo class="po-md-6" name="gravadora" p-label="Tipo de tape" [ngModel]="tipo_tape"
+                (ngModelChange)="tipo_tape = $event" [p-options]="Tipo_tape"></po-combo>
+            <po-combo class="po-md-6" name="etiqueta" p-label="Etiqueta" [ngModel]="etiqueta"
+                (ngModelChange)="etiqueta = $event" [p-options]="Etiqueta"> </po-combo>
+            <po-combo class="po-md-12" name="gravadora" p-label="Gravadora" [ngModel]="gravadora"
+                (ngModelChange)="gravadora = $event" [p-options]="Gravadora"> </po-combo>
+            <po-input class="po-md-6" name="percentualArtistico" [(ngModel)]="percentualArtistico" p-mask="999"
+                p-label="Percentual artistico %"></po-input>
+            <po-input class="po-md-6" name="novoNumero" [(ngModel)]="novoNumero" p-label="Novo numero"></po-input>
+            <po-input class="po-md-12" name="produtorMusical" [(ngModel)]="produtorMusical"
+                p-label="Produtor musical"></po-input>
+            <po-checkbox-group class="po-lg-12" name="tiposMidia" p-label="tipos midia" [p-options]="auditOptions">
+            </po-checkbox-group>
+            <po-datepicker class="po-md-4" name="dataDeLancamento" [(ngModel)]="dataDeLancamento"
+                p-label="Data de lançamento"></po-datepicker>
+            <po-input class="po-md-8" name="observacao" [(ngModel)]="observacao" p-label="Observação"></po-input>
+            <po-input class="po-md-4" name="smi" [(ngModel)]="smi" p-label="SMI"> </po-input>
+            <po-input class="po-md-4" name="prateleira" [(ngModel)]="prateleira" p-label="Prateleira"> </po-input>
+            <po-switch class="po-md-4" name="stream" p-label="Subiu para stream" [(ngModel)]="stream"> </po-switch>
+            <po-input class="po-md-12" name="descricao" [(ngModel)]="descricao" p-label="Descrição"> </po-input>
+        </div>
+        <div class="po-row">
+            <po-input class="po-md-5" name="buscacliente" p-label="Insira o nome ou id da musica para adicionar ao tape"
+                [(ngModel)]="musica" (p-change-model)="buscaMusica()" p-icon="po-icon po-icon-search">
+            </po-input>
+            <po-combo class="po-md-5" name="musica" p-label="Aperte o botão para confirmar a musica"
+                [p-options]="Musica" [ngModel]="musica" (ngModelChange)="musica = $event"> </po-combo>
+            <po-button class="po-m-4 po-md-0"
+                style="--border-radius: 50%;  --padding: 0 1em; display: inline-flex; justify-content: center;  align-items: center;"
+                p-label="+" (p-click)="ConfirmaMusica()"></po-button>
+        </div>
+        <po-table class="po-m-10" [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
+                p-container="light" [p-columns]="columns" [p-items]="listaMusicas" p-container="shadow">
+            </po-table>
+    </form>
+</po-modal>
+<po-modal #modalTapeView p-click-out="false" [p-hide-close]="true" p-title="Tape">
+    <po-button style="margin-left: auto" class="po-m-5" p-label="Imprimir QR Code" (p-click)="abrirQRCode()"
+        p-type="primary">
+    </po-button>
+    <po-divider p-label="Dados gerais"></po-divider>
+    <div class="po-row">
+        <po-combo class="po-md-6" name="gravadora" p-label="Gravadora" [p-disabled]="true" [ngModel]="gravadora"
+            (ngModelChange)="gravadora = $event" [p-options]="Gravadora"> </po-combo>
+        <po-combo class="po-md-6" name="etiqueta" p-label="Etiqueta" [p-disabled]="true" [ngModel]="etiqueta"
+            (ngModelChange)="etiqueta = $event" [p-options]="Etiqueta"> </po-combo>
+        <po-input class="po-md-12" name="produtorMusical" p-disabled="true" [(ngModel)]="produtorMusical"
+            p-label="Produtor musical"></po-input>
+        <po-datepicker class="po-md-4" name="dataDeLancamento" p-disabled="true" [(ngModel)]="dataDeLancamento"
+            p-label="Data de lançamento"></po-datepicker>
+        <po-input class="po-md-6" name="percentualArtistico" p-disabled="true" [(ngModel)]="percentualArtistico"
+            p-mask="999" p-label="Percentual artistico %"></po-input>
+        <po-input class="po-md-6" name="novoNumero" p-disabled="true" [(ngModel)]="novoNumero"
+            p-label="Novo numero"></po-input>
+        <po-input class="po-md-12" name="titulo" p-disabled="true" [(ngModel)]="titulo" p-label="Titulo"></po-input>
+        <po-combo class="po-md-12" name="artista" p-label="Artista" [p-disabled]="true" [ngModel]="artista"
+            (ngModelChange)="artista = $event" [p-options]="Artista"> </po-combo>
+        <po-combo class="po-md-6" name="tipo_tape" p-label="Tipo de tape" [p-disabled]="true" [ngModel]="tipo_tape"
+            (ngModelChange)="tipo_tape = $event" [p-options]="Tipo_tape"></po-combo>
+        <po-input class="po-md-7" name="observacao" p-disabled="true" [(ngModel)]="observacao"
+            p-label="Observação"></po-input>
+        <po-input class="po-md-3" name="smi" p-disabled="true" [(ngModel)]="smi" p-label="SMI"> </po-input>
+        <po-input class="po-md-2" name="prateleira" p-disabled="true" [(ngModel)]="prateleira" p-label="Prateleira">
+        </po-input>
+        <po-input class="po-md-12" name="descricao" p-disabled="true" [(ngModel)]="descricao" p-label="Descrição">
+        </po-input>
+        <po-table p-disable="true" [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true"
+            [p-striped]="true" p-container="light" [p-columns]="columns" [p-items]="listaMusicas" p-container="shadow">
+        </po-table>
+
+    </div>
+
+</po-modal>
+
+<po-modal #modalQRCode [p-primary-action]="confirmaQRCode" p-click-out="false" [p-hide-close]="false"
+    p-title="QR Code de Impressão">
+    <div id="elementToPrint" class="qrcode-container">
+        <img #qrcodeImage [src]="qrCodeImage" alt="QR Code">
+    </div>
+</po-modal>
+
+<po-modal #modalExport [p-primary-action]="confirmaExportacao" p-click-out="false" [p-hide-close]="false"
+    p-title="Exportar consulta">
+    <po-select name="select" p-label="Selecione o formato:" [p-options]="[
+    { label: 'CSV (Separado por ponto e vírgula;)', value: 'csv' },
+    { label: 'PDF', value: 'pdf' }
+  ]" [ngModel]="tipoExport" (ngModelChange)="tipoExport = $event">
+    </po-select>
+</po-modal>
+<!-- </po-page-edit> -->

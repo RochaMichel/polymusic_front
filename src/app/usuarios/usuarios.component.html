@@ -1,0 +1,136 @@
+<!-- <po-page-edit p-title="Orçamentos" class="p-m-0"> -->
+<po-page-default p-title="Sessão de usuários">
+    <div class="po-row">
+        <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar usuário" [(ngModel)]="Usuario"
+            (p-change-model)="buscaUsuario()" p-icon="po-icon po-icon-search">
+        </po-input>
+
+        <po-button class="po-m-5" style="margin-left: auto" p-label="Exportar" (p-click)="Exportacao()"></po-button>
+        <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir usuário" (p-click)="criarUsuario()"
+            p-type="primary">
+        </po-button>
+    </div>
+    <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
+        p-container="light" [p-columns]="colunas" [p-items]="listaUsuarios" p-container="shadow">
+    </po-table>
+</po-page-default>
+
+<po-modal #modalUsuario [p-primary-action]="confirmaUsuario" [p-secondary-action]="cancelarUsuario" p-click-out="false"
+    [p-hide-close]="true" p-title="Novo usuário">
+    <form #ProdutoForm="ngForm">
+        <po-divider p-label="Dados gerais"></po-divider>
+        <div class="po-row">
+            <po-input class="po-md-12" p-required name="nome" [(ngModel)]="nome" p-label="Nome">
+            </po-input>
+            <po-input class="po-md-12" p-required name="usuario" [(ngModel)]="usuario" p-label="Usuario">
+            </po-input>
+        </div>
+        <div class="po-row">
+            <po-password *ngIf="altera===false" class="po-md-6" p-required name="senha" p-label="Senha"
+                [(ngModel)]="senha">
+            </po-password>
+            <po-password *ngIf="altera===false" class="po-md-6" p-required name="confirmaSenha" p-label="Confirma senha"
+                [(ngModel)]="confirmaSenha">
+            </po-password>
+            <po-input class="po-md-6" name="cpf" p-label="CPF" p-mask="999.999.999-99" [(ngModel)]="cpf">
+            </po-input>
+            <po-combo class="po-md-6" name="perfilDeAcesso" p-label="Perfil de acesso" [ngModel]="perfil_acesso"
+                (ngModelChange)="perfil_acesso = $event" [p-options]="perfil_de_acesso"> </po-combo>
+
+        </div>
+        <po-divider p-label="Contato"></po-divider>
+        <div class="po-row">
+            <po-input class="po-md-12" name="email" p-label="E-mail" [(ngModel)]="email">
+            </po-input>
+        </div>
+        <div class="po-row">
+            <po-input class="po-md-4" name="telefone" p-mask="(99) 99999-9999" p-label="Telefone comercial"
+                [(ngModel)]="telefone_comercial">
+            </po-input>
+            <po-input class="po-md-4" name="telefone" p-mask="(99) 99999-9999" p-label="Telefone celular"
+                [(ngModel)]="telefone_celular">
+            </po-input>
+            <po-input class="po-md-4" name="Site" p-label="Site" [(ngModel)]="site">
+            </po-input>
+        </div>
+        <po-divider p-label="Endereço"></po-divider>
+        <div class="po-row">
+            <po-input class="po-md-4" name="CEP" p-mask="99999-999" p-label="CEP" [(ngModel)]="cep">
+            </po-input>
+            <po-input class="po-md-4" name="logradouro" p-label="Logradouro" [(ngModel)]="logradouro">
+            </po-input>
+            <po-input class="po-md-4" name="número" p-label="Número" [(ngModel)]="numero">
+            </po-input>
+            <po-input class="po-md-4" name="complemento" p-label="Complemento" [(ngModel)]="complemento">
+            </po-input>
+            <po-input class="po-md-4" name="bairro" p-label="Bairro" [(ngModel)]="bairro">
+            </po-input>
+            <po-input class="po-md-4" name="UF" p-label="UF" [(ngModel)]="uf">
+            </po-input>
+            <po-input class="po-md-4" name="cidade" p-label="Cidade" [(ngModel)]="cidade">
+            </po-input>
+        </div> p-disabled="true"
+    </form>
+</po-modal>
+<po-modal #modalUsuarioView p-click-out="false" [p-hide-close]="true" p-title="Usuário">
+    <form #ProdutoForm="ngForm">
+        <po-divider p-label="Dados gerais"></po-divider>
+        <div class="po-row">
+            <po-input class="po-md-12" p-required name="nome" p-disabled="true" [(ngModel)]="nome" p-label="Nome">
+            </po-input>
+            <po-input class="po-md-12" p-required name="usuario" p-disabled="true" [(ngModel)]="usuario"
+                p-label="Usuario">
+            </po-input>
+        </div>
+        <div class="po-row">
+            <po-input class="po-md-6" name="cpf" p-label="CPF" p-mask="999.999.999-99" p-disabled="true"
+                [(ngModel)]="cpf">
+            </po-input>
+            <po-combo class="po-md-6" name="perfilDeAcesso" p-label="Perfil de acesso" [p-disabled]="true" [ngModel]="perfil_acesso"
+                (ngModelChange)="perfil_acesso = $event" [p-options]="perfil_de_acesso"> </po-combo>
+
+        </div>
+        <po-divider p-label="Contato"></po-divider>
+        <div class="po-row">
+            <po-input class="po-md-12" name="email" p-label="E-mail" p-disabled="true" [(ngModel)]="email">
+            </po-input>
+        </div>
+        <div class="po-row">
+            <po-input class="po-md-4" name="telefone" p-mask="(99) 99999-9999" p-disabled="true"
+                p-label="Telefone comercial" [(ngModel)]="telefone_comercial">
+            </po-input>
+            <po-input class="po-md-4" name="telefone" p-mask="(99) 99999-9999" p-disabled="true"
+                p-label="Telefone celular" [(ngModel)]="telefone_celular">
+            </po-input>
+            <po-input class="po-md-4" name="Site" p-label="Site" p-disabled="true" [(ngModel)]="site">
+            </po-input>
+        </div>
+        <po-divider p-label="Endereço"></po-divider>
+        <div class="po-row">
+            <po-input class="po-md-4" name="CEP" p-mask="99999-999" p-label="CEP" p-disabled="true" [(ngModel)]="cep">
+            </po-input>
+            <po-input class="po-md-4" name="logradouro" p-label="Logradouro" p-disabled="true" [(ngModel)]="logradouro">
+            </po-input>
+            <po-input class="po-md-4" name="número" p-label="Número" p-disabled="true" [(ngModel)]="numero">
+            </po-input>
+            <po-input class="po-md-4" name="complemento" p-label="Complemento" p-disabled="true"
+                [(ngModel)]="complemento">
+            </po-input>
+            <po-input class="po-md-4" name="bairro" p-label="Bairro" p-disabled="true" [(ngModel)]="bairro">
+            </po-input>
+            <po-input class="po-md-4" name="UF" p-label="UF" p-disabled="true" [(ngModel)]="uf">
+            </po-input>
+            <po-input class="po-md-4" name="cidade" p-label="Cidade" p-disabled="true" [(ngModel)]="cidade">
+            </po-input>
+        </div>
+    </form>
+</po-modal>
+<po-modal #modalExport [p-primary-action]="confirmaExportacao" p-click-out="false" [p-hide-close]="false"
+    p-title="Exportar consulta">
+    <po-select name="select" p-label="Selecione o formato:" [p-options]="[
+    { label: 'CSV (Separado por ponto e vírgula;)', value: 'csv' },
+    { label: 'PDF', value: 'pdf' }
+  ]" [ngModel]="tipoExport" (ngModelChange)="tipoExport = $event">
+    </po-select>
+</po-modal>
+<!-- </po-page-edit> -->

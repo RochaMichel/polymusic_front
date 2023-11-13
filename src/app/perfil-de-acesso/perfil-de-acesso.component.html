@@ -1,0 +1,132 @@
+<!-- <po-page-edit p-title="Orçamentos" class="p-m-0"> -->
+    <po-page-default p-title="Sessão de perfil de acesso">
+        <div class="po-row">
+            <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar perfil de acesso" [(ngModel)]="PerfilDeAcesso "(p-change-model)="buscarPerfilDeAcesso()" p-icon="po-icon po-icon-search">
+            </po-input>
+    
+            <po-button class="po-m-5" style="margin-left: auto" p-label="Exportar" (p-click)="Exportacao()"></po-button>
+            <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir pefil de acesso" (p-click)="criarPerfilDeAcesso()"
+                p-type="primary">
+            </po-button>
+        </div>
+        <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true" p-container="light"
+            [p-columns]="colunas" [p-items]="listaPerfilDeAcesso" p-container="shadow">
+        </po-table>
+    </po-page-default>
+    
+    <po-modal #modalPerfilDeAcesso [p-primary-action]="confirmaPerdilDeAcesso" [p-secondary-action]="cancelarPerdilDeAcesso" p-click-out="false"
+        [p-hide-close]="true" p-title="Perfil de acesso">
+        <form #ProdutoForm="ngForm">
+            <po-divider p-label="Dados gerais"></po-divider>
+            <div class="po-row">
+                <po-input class="po-md-12" p-required name="nome" [(ngModel)]="nome_perfil" p-label="Nome do perfil">
+                </po-input>
+            </div>
+            <po-divider p-label="permissões"></po-divider>
+            <div class="po-row">
+                <po-switch class="po-md-3" name="alterarArtista" p-label="Altera artista"           [(ngModel)]="altArtista"  > </po-switch>
+                <po-switch class="po-md-3" name="criaArtista" p-label="Cria artista"                [(ngModel)]="criArtista"  > </po-switch>
+                <po-switch class="po-md-3" name="excluiArtista" p-label="Exclui artista"            [(ngModel)]="excArtista"  > </po-switch>
+                <po-switch class="po-md-3" name="visualizaArtista" p-label="Visualiza artista"      [(ngModel)]="visArtista"  > </po-switch>
+                <po-switch class="po-md-3" name="alterarEditoras" p-label="Altera editoras"         [(ngModel)]="altEditoras"  > </po-switch>
+                <po-switch class="po-md-3" name="criaEditoras" p-label="Cria editoras"              [(ngModel)]="criEditoras" > </po-switch>
+                <po-switch class="po-md-3" name="excluiEditoras" p-label="Exclui editoras"          [(ngModel)]="excEditoras"  > </po-switch>
+                <po-switch class="po-md-3" name="visualizaEditoras" p-label="Visualiza editoras"    [(ngModel)]="visEditoras"    > </po-switch>
+                <po-switch class="po-md-3" name="alterarEtiquetas" p-label="Altera etiquetas"       [(ngModel)]="altEtiqueta"    > </po-switch>
+                <po-switch class="po-md-3" name="criaEtiquetas" p-label="Cria etiquetas"            [(ngModel)]="criEtiqueta"    > </po-switch>
+                <po-switch class="po-md-3" name="excluiEtiquetas" p-label="Exclui etiquetas"        [(ngModel)]="excEtiqueta"    > </po-switch>
+                <po-switch class="po-md-3" name="visualizaEtiquetas" p-label="Visualiza etiquetas"  [(ngModel)]="visEtiqueta"     > </po-switch>
+                <po-switch class="po-md-3" name="alterarGravadoras" p-label="Altera gravadoras"     [(ngModel)]="altGravadora"      > </po-switch>
+                <po-switch class="po-md-3" name="criaGravadoras" p-label="Cria gravadoras"          [(ngModel)]="criGravadora"     > </po-switch>
+                <po-switch class="po-md-3" name="excluiGravadoras" p-label="Exclui gravadoras"      [(ngModel)]="excGravadora"        > </po-switch>
+                <po-switch class="po-md-3" name="visualizaGravadoras" p-label="Visualiza grava..."  [(ngModel)]="visGravadora"         > </po-switch>
+                <po-switch class="po-md-3" name="alterarNomes" p-label="Altera nomes"               [(ngModel)]="altNomes"    > </po-switch>
+                <po-switch class="po-md-3" name="criaNomes" p-label="Cria nomes"                    [(ngModel)]="criNomes"    > </po-switch>
+                <po-switch class="po-md-3" name="excluiNomes" p-label="Exclui nomes"                [(ngModel)]="excNomes"    > </po-switch>
+                <po-switch class="po-md-3" name="visualizaNomes" p-label="Visualiza nomes"          [(ngModel)]="visNomes"    > </po-switch>
+                <po-switch class="po-md-3" name="alterarTapes" p-label="Altera tapes"               [(ngModel)]="altTapes"      > </po-switch>
+                <po-switch class="po-md-3" name="criaTapes" p-label="Cria tapes"                    [(ngModel)]="criTapes"    > </po-switch>
+                <po-switch class="po-md-3" name="excluiTapes" p-label="Exclui tapes"                [(ngModel)]="excTapes"    > </po-switch>
+                <po-switch class="po-md-3" name="visualizaTapes" p-label="Visualiza tapes"          [(ngModel)]="visTapes"    > </po-switch>
+                <po-switch class="po-md-3" name="alterarTipoDeTapes" p-label="Altera tipo de tapes" [(ngModel)]="altTipoTapes"       > </po-switch>
+                <po-switch class="po-md-3" name="criaTipoDeTapes" p-label="Cria tipo de tapes"      [(ngModel)]="criTipoTapes"      > </po-switch>
+                <po-switch class="po-md-3" name="excluiTipoDeTapes" p-label="Exclui tipo de tapes"  [(ngModel)]="excTipoTapes"        > </po-switch>
+                <po-switch class="po-md-3" name="visualizaTipoDeTapes" p-label="Visualiza tp tapes" [(ngModel)]="visTipoTapes"            > </po-switch>
+                <po-switch class="po-md-3" name="alterarTipoDeTapes" p-label="Altera usuario" [(ngModel)]="altUsuarios"       > </po-switch>
+                <po-switch class="po-md-3" name="criaTipoDeTapes" p-label="Cria usuario"      [(ngModel)]="criUsuarios"      > </po-switch>
+                <po-switch class="po-md-3" name="excluiTipoDeTapes" p-label="Exclui usuario"  [(ngModel)]="excUsuarios"        > </po-switch>
+                <po-switch class="po-md-3" name="visualizaTipoDeTapes" p-label="Visualiza usuario"  [(ngModel)]="visUsuarios"            > </po-switch>
+                <po-switch class="po-md-3" name="alterarTipoDeTapes" p-label="Altera musica" [(ngModel)]="altMusicas"       > </po-switch>
+                <po-switch class="po-md-3" name="criaTipoDeTapes" p-label="Cria musica"      [(ngModel)]="criMusicas"      > </po-switch>
+                <po-switch class="po-md-3" name="excluiTipoDeTapes" p-label="Exclui musica"  [(ngModel)]="excMusicas"        > </po-switch>
+                <po-switch class="po-md-3" name="visualizaTipoDeTapes" p-label="Visualiza musica" [(ngModel)]="visMusicas"            > </po-switch>
+                <po-switch class="po-md-3" name="alterarTipoDeTapes" p-label="Altera perfil acesso" [(ngModel)]="altPerfilAcesso"       > </po-switch>
+                <po-switch class="po-md-3" name="criaTipoDeTapes" p-label="Cria perfil acesso"      [(ngModel)]="criPerfilAcesso"      > </po-switch>
+                <po-switch class="po-md-3" name="excluiTipoDeTapes" p-label="Exclui perfil acesso"  [(ngModel)]="excPerfilAcesso"        > </po-switch>
+                <po-switch class="po-md-3" name="visualizaTipoDeTapes" p-label="Visu. perfil acesso" [(ngModel)]="visPerfilAcesso"            > </po-switch>
+            </div>
+        </form>
+    </po-modal>
+    <po-modal #modalPerfilDeAcessoView p-click-out="false"
+        [p-hide-close]="true" p-title="Perfil de acesso">
+        <form #ProdutoForm="ngForm">
+            <po-divider p-label="Dados gerais"></po-divider>
+            <div class="po-row">
+                <po-input class="po-md-12" p-required name="nome" [(ngModel)]="nome_perfil" p-disabled="true" p-label="Nome do perfil">
+                </po-input>
+            </div>
+            <po-divider p-label="permissões"></po-divider>
+            <div class="po-row">
+                <po-switch class="po-md-3" name="alterarArtista" p-label="Altera artista"           p-disabled="true" [(ngModel)]="altArtista"  > </po-switch>
+                <po-switch class="po-md-3" name="criaArtista" p-label="Cria artista"                p-disabled="true" [(ngModel)]="criArtista"  > </po-switch>
+                <po-switch class="po-md-3" name="excluiArtista" p-label="Exclui artista"            p-disabled="true" [(ngModel)]="excArtista"  > </po-switch>
+                <po-switch class="po-md-3" name="visualizaArtista" p-label="Visualiza artista"      p-disabled="true" [(ngModel)]="visArtista"  > </po-switch>
+                <po-switch class="po-md-3" name="alterarEditoras" p-label="Altera editoras"         p-disabled="true" [(ngModel)]="altEditoras"  > </po-switch>
+                <po-switch class="po-md-3" name="criaEditoras" p-label="Cria editoras"              p-disabled="true" [(ngModel)]="criEditoras" > </po-switch>
+                <po-switch class="po-md-3" name="excluiEditoras" p-label="Exclui editoras"          p-disabled="true" [(ngModel)]="excEditoras"  > </po-switch>
+                <po-switch class="po-md-3" name="visualizaEditoras" p-label="Visualiza editoras"    p-disabled="true" [(ngModel)]="visEditoras"    > </po-switch>
+                <po-switch class="po-md-3" name="alterarEtiquetas" p-label="Altera etiquetas"       p-disabled="true" [(ngModel)]="altEtiqueta"    > </po-switch>
+                <po-switch class="po-md-3" name="criaEtiquetas" p-label="Cria etiquetas"            p-disabled="true" [(ngModel)]="criEtiqueta"    > </po-switch>
+                <po-switch class="po-md-3" name="excluiEtiquetas" p-label="Exclui etiquetas"        p-disabled="true" [(ngModel)]="excEtiqueta"    > </po-switch>
+                <po-switch class="po-md-3" name="visualizaEtiquetas" p-label="Visualiza etiquetas"  p-disabled="true" [(ngModel)]="visEtiqueta"     > </po-switch>
+                <po-switch class="po-md-3" name="alterarGravadoras" p-label="Altera gravadoras"     p-disabled="true" [(ngModel)]="altGravadora"      > </po-switch>
+                <po-switch class="po-md-3" name="criaGravadoras" p-label="Cria gravadoras"          p-disabled="true" [(ngModel)]="criGravadora"     > </po-switch>
+                <po-switch class="po-md-3" name="excluiGravadoras" p-label="Exclui gravadoras"      p-disabled="true" [(ngModel)]="excGravadora"        > </po-switch>
+                <po-switch class="po-md-3" name="visualizaGravadoras" p-label="Visualiza grava..."  p-disabled="true" [(ngModel)]="visGravadora"         > </po-switch>
+                <po-switch class="po-md-3" name="alterarNomes" p-label="Altera nomes"               p-disabled="true" [(ngModel)]="altNomes"    > </po-switch>
+                <po-switch class="po-md-3" name="criaNomes" p-label="Cria nomes"                    p-disabled="true" [(ngModel)]="criNomes"    > </po-switch>
+                <po-switch class="po-md-3" name="excluiNomes" p-label="Exclui nomes"                p-disabled="true" [(ngModel)]="excNomes"    > </po-switch>
+                <po-switch class="po-md-3" name="visualizaNomes" p-label="Visualiza nomes"          p-disabled="true" [(ngModel)]="visNomes"    > </po-switch>
+                <po-switch class="po-md-3" name="alterarTapes" p-label="Altera tapes"               p-disabled="true" [(ngModel)]="altTapes"      > </po-switch>
+                <po-switch class="po-md-3" name="criaTapes" p-label="Cria tapes"                    p-disabled="true" [(ngModel)]="criTapes"    > </po-switch>
+                <po-switch class="po-md-3" name="excluiTapes" p-label="Exclui tapes"                p-disabled="true" [(ngModel)]="excTapes"    > </po-switch>
+                <po-switch class="po-md-3" name="visualizaTapes" p-label="Visualiza tapes"          p-disabled="true" [(ngModel)]="visTapes"    > </po-switch>
+                <po-switch class="po-md-3" name="alterarTipoDeTapes" p-label="Altera tipo de tapes" p-disabled="true" [(ngModel)]="altTipoTapes"       > </po-switch>
+                <po-switch class="po-md-3" name="criaTipoDeTapes" p-label="Cria tipo de tapes"      p-disabled="true" [(ngModel)]="criTipoTapes"      > </po-switch>
+                <po-switch class="po-md-3" name="excluiTipoDeTapes" p-label="Exclui tipo de tapes"  p-disabled="true" [(ngModel)]="excTipoTapes"        > </po-switch>
+                <po-switch class="po-md-3" name="visualizaTipoDeTapes" p-label="Visualiza tp tapes" p-disabled="true" [(ngModel)]="visTipoTapes"            > </po-switch>
+                <po-switch class="po-md-3" name="alterarTipoDeTapes" p-label="Altera usuario" p-disabled="true"  [(ngModel)]="altUsuarios"       > </po-switch>
+                <po-switch class="po-md-3" name="criaTipoDeTapes" p-label="Cria usuario"     p-disabled="true"  [(ngModel)]="criUsuarios"      > </po-switch>
+                <po-switch class="po-md-3" name="excluiTipoDeTapes" p-label="Exclui usuario"  p-disabled="true" [(ngModel)]="excUsuarios"        > </po-switch>
+                <po-switch class="po-md-3" name="visualizaTipoDeTapes" p-label="Visualiza usuario"  p-disabled="true" [(ngModel)]="visUsuarios"            > </po-switch>
+                <po-switch class="po-md-3" name="alterarTipoDeTapes" p-label="Altera musica" p-disabled="true" [(ngModel)]="altMusicas"       > </po-switch>
+                <po-switch class="po-md-3" name="criaTipoDeTapes" p-label="Cria musica"      p-disabled="true" [(ngModel)]="criMusicas"      > </po-switch>
+                <po-switch class="po-md-3" name="excluiTipoDeTapes" p-label="Exclui musica"  p-disabled="true" [(ngModel)]="excMusicas"        > </po-switch>
+                <po-switch class="po-md-3" name="visualizaTipoDeTapes" p-label="Visualiza musica" p-disabled="true" [(ngModel)]="visMusicas"            > </po-switch>
+                <po-switch class="po-md-3" name="alterarTipoDeTapes" p-label="Altera perfil acesso" p-disabled="true" [(ngModel)]="altPerfilAcesso"       > </po-switch>
+                <po-switch class="po-md-3" name="criaTipoDeTapes" p-label="Cria perfil acesso"     p-disabled="true" [(ngModel)]="criPerfilAcesso"      > </po-switch>
+                <po-switch class="po-md-3" name="excluiTipoDeTapes" p-label="Exclui perfil acesso"  p-disabled="true" [(ngModel)]="excPerfilAcesso"        > </po-switch>
+                <po-switch class="po-md-3" name="visualizaTipoDeTapes" p-label="Visualiza perfil acesso" p-disabled="true" [(ngModel)]="visPerfilAcesso"            > </po-switch>
+            </div>
+        </form>
+    </po-modal>
+    <po-modal #modalExport [p-primary-action]="confirmaExportacao" p-click-out="false" [p-hide-close]="false"
+    p-title="Exportar consulta">
+    <po-select name="select" p-label="Selecione o formato:" [p-options]="[
+    { label: 'CSV (Separado por ponto e vírgula;)', value: 'csv' },
+    { label: 'PDF', value: 'pdf' }
+  ]" [ngModel]="tipoExport"
+  (ngModelChange)="tipoExport = $event">
+    </po-select>
+</po-modal>
+    <!-- </po-page-edit> -->

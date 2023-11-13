@@ -1,0 +1,73 @@
+<po-loading-overlay
+  [hidden]="isHideLoading"
+  p-text="Iniciando sessão..."
+></po-loading-overlay>
+<po-page-default>
+    <form #formLogin="ngForm">
+      <br>
+      <br>
+      <div class="po-page-login-body">
+        <po-container class="po-m-5">
+          <po-image p-src="../assets/MarcaP2.png" p-alt="imagem" > </po-image>
+          <div class="po-page-login-panel-content">
+            <div class="po-page-login-header">
+            </div>
+            <div class="po-page-login-form ng-untouched ng-pristine ng-invalid">
+              <div>
+                <div class="container">
+                </div>
+                <span style="color: white;"><b>Usuário</b></span>
+                <po-input
+                  name="usuario"
+                  class="po-sm-12"
+                  [(ngModel)]="user"
+                  p-icon="po-icon-user"
+                  p-clean="true"
+                  [p-auto-focus]="true"
+                  p-required="true"
+                  [p-optional]="true"
+                  p-placeholder="Insira seu usuário"
+                >
+                </po-input>
+              </div>
+              <div>
+                <span style="color: white;"><b>Senha</b></span>
+                <po-password
+                  name="password"
+                  class="po-sm-12"
+                  [(ngModel)]="password"
+                  p-clean="true"
+                  p-required="true"
+                  p-placeholder="Insira sua senha"
+                >
+                </po-password>
+              </div>
+              <div>
+                <po-button
+                  class="po-sm-12"
+                  p-label="Entrar"
+                  (p-click)="ClickLogin()"
+                  
+                >
+                </po-button>
+              </div>
+              <div>
+                <po-button
+                  class="po-row po-sm-12 po-mt-1"
+                  p-label="Esqueceu sua senha?"
+                  (p-click)="passwordRecoveryModal.open()"
+                  
+                >
+                </po-button>
+              </div>
+            </div>
+          </div>
+        </po-container>
+      </div>
+    </form>
+  </po-page-default>
+  
+  <po-modal-password-recovery
+    #passwordRecoveryModal
+    (p-submit)="EnviaEmail($event)"
+  ></po-modal-password-recovery>

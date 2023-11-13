@@ -1,0 +1,7 @@
+.qrcode-container {
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    height: 100%; /* Garante que o contêiner ocupe a altura total do pai se necessário */
+  }
+
