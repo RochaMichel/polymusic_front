@@ -13,6 +13,7 @@ export class ListaDeNomesService {
   urlListaNomes = `${environment.API}listaNomes`;
   urlExcluirNomes = `${environment.API}excluirNomes`;
   urlBuscarNomes = `${environment.API}buscarNomes`;
+  urlBuscarNomesExato = `${environment.API}buscarNomesExato`;
   urlCarregarNomes = `${environment.API}carregarNomes`;
   urlCriarNomes = `${environment.API}criarNomes`;
 
@@ -48,7 +49,12 @@ export class ListaDeNomesService {
       { headers: this.headers }
     );
   }
-
+  buscarNomesExato(nomes: any): Observable <any> {
+    return this.http.get(
+      this.urlBuscarNomesExato+"?nomes="+nomes,
+      { headers: this.headers }
+    );
+  }
   carregarNomes(id: Number): Observable <any> {
     return this.http.get(
       this.urlCarregarNomes+"?id="+id ,

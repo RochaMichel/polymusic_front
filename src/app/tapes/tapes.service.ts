@@ -1,6 +1,6 @@
 import { Injectable, Inject, Renderer2 } from "@angular/core";
 import { PoTableColumn } from "@po-ui/ng-components";
-import { Observable } from "rxjs";
+import { Observable, pluck } from "rxjs";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { environment } from "src/environments/environment";
 
@@ -64,4 +64,8 @@ export class ListaDeTapesService {
     );
   }
 
+  getHeroes(data: any): Observable<any> {
+    const values = data?.length ? data.toString() : data;
+    return this.http.get(`https://po-sample-api.onrender.com/v1/heroes?value=${values}`).pipe(pluck('items'));
+  }
 }

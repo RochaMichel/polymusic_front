@@ -19,8 +19,7 @@
     <form #optionsForm="ngForm">
         <div class="po-row">
             <po-input class="po-md-12" name="titulo" [(ngModel)]="titulo" p-label="Titulo"></po-input>
-            <po-combo class="po-md-12" name="artista" p-label="Artista" [ngModel]="artista"
-                (ngModelChange)="artista = $event" [p-options]="Artista"> </po-combo>
+            <po-input *ngIf="altera" class="po-md-12" name="artista" p-disabled="true" [(ngModel)]="artista" p-label="Artista"></po-input>
             <po-combo class="po-md-6" name="gravadora" p-label="Tipo de tape" [ngModel]="tipo_tape"
                 (ngModelChange)="tipo_tape = $event" [p-options]="Tipo_tape"></po-combo>
             <po-combo class="po-md-6" name="etiqueta" p-label="Etiqueta" [ngModel]="etiqueta"
@@ -43,18 +42,33 @@
             <po-input class="po-md-12" name="descricao" [(ngModel)]="descricao" p-label="Descrição"> </po-input>
         </div>
         <div class="po-row">
-            <po-input class="po-md-5" name="buscacliente" p-label="Insira o nome ou id da musica para adicionar ao tape"
-                [(ngModel)]="musica" (p-change-model)="buscaMusica()" p-icon="po-icon po-icon-search">
-            </po-input>
-            <po-combo class="po-md-5" name="musica" p-label="Aperte o botão para confirmar a musica"
-                [p-options]="Musica" [ngModel]="musica" (ngModelChange)="musica = $event"> </po-combo>
-            <po-button class="po-m-4 po-md-0"
-                style="--border-radius: 50%;  --padding: 0 1em; display: inline-flex; justify-content: center;  align-items: center;"
-                p-label="+" (p-click)="ConfirmaMusica()"></po-button>
+            <po-lookup
+            class="po-md-12"
+            name="lookup"
+            [(ngModel)]="Musica"
+            p-field-label="musica"
+            p-field-value="id"
+            p-filter-service="http://localhost:3000/consultarmusica"
+            p-label="Carregar musica"
+            [p-multiple]="true"
+            
+          >
+          </po-lookup>
+          <po-lookup
+            class="po-md-6"
+            name="lookup"
+            [(ngModel)]="multiLookup"
+            p-field-label="label"
+            p-field-value="value"
+            p-filter-service="https://po-sample-api.onrender.com/v1/heroes"
+            p-label="Search a Hero"
+            [p-multiple]="true"
+            (p-change)="changeOptions($event)"
+            ></po-lookup>
         </div>
-        <po-table class="po-m-10" [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
-                p-container="light" [p-columns]="columns" [p-items]="listaMusicas" p-container="shadow">
-            </po-table>
+        <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true"
+        [p-striped]="true" p-container="light" [p-columns]="columns" [p-items]="listaMusicas" p-container="shadow">
+    </po-table>
     </form>
 </po-modal>
 <po-modal #modalTapeView p-click-out="false" [p-hide-close]="true" p-title="Tape">
@@ -63,6 +77,7 @@
     </po-button>
     <po-divider p-label="Dados gerais"></po-divider>
     <div class="po-row">
+        <po-input class="po-md-12" name="titulo" p-disabled="true" [(ngModel)]="titulo" p-label="Titulo"></po-input>
         <po-combo class="po-md-6" name="gravadora" p-label="Gravadora" [p-disabled]="true" [ngModel]="gravadora"
             (ngModelChange)="gravadora = $event" [p-options]="Gravadora"> </po-combo>
         <po-combo class="po-md-6" name="etiqueta" p-label="Etiqueta" [p-disabled]="true" [ngModel]="etiqueta"
@@ -75,9 +90,7 @@
             p-mask="999" p-label="Percentual artistico %"></po-input>
         <po-input class="po-md-6" name="novoNumero" p-disabled="true" [(ngModel)]="novoNumero"
             p-label="Novo numero"></po-input>
-        <po-input class="po-md-12" name="titulo" p-disabled="true" [(ngModel)]="titulo" p-label="Titulo"></po-input>
-        <po-combo class="po-md-12" name="artista" p-label="Artista" [p-disabled]="true" [ngModel]="artista"
-            (ngModelChange)="artista = $event" [p-options]="Artista"> </po-combo>
+        <po-input class="po-md-12" name="artista" p-disabled="true" [(ngModel)]="artista" p-label="Artista"></po-input>
         <po-combo class="po-md-6" name="tipo_tape" p-label="Tipo de tape" [p-disabled]="true" [ngModel]="tipo_tape"
             (ngModelChange)="tipo_tape = $event" [p-options]="Tipo_tape"></po-combo>
         <po-input class="po-md-7" name="observacao" p-disabled="true" [(ngModel)]="observacao"
@@ -90,7 +103,6 @@
         <po-table p-disable="true" [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true"
             [p-striped]="true" p-container="light" [p-columns]="columns" [p-items]="listaMusicas" p-container="shadow">
         </po-table>
-
     </div>
 
 </po-modal>

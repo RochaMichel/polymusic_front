@@ -13,6 +13,7 @@ export class ListaDeMusicaService {
   urlListaMusica = `${environment.API}listarMusica`;
   urlExcluirMusica = `${environment.API}excluirMusica`;
   urlBuscarMusica = `${environment.API}buscarMusica`;
+  urlBuscarMusicaExata = `${environment.API}buscarMusicaExata`;
   urlCarregarMusica = `${environment.API}carregarMusica`;
   urlCriarMusica = `${environment.API}criarMusica`;
 
@@ -45,6 +46,12 @@ export class ListaDeMusicaService {
   buscarMusica(musica: any): Observable <any> {
     return this.http.get(
       this.urlBuscarMusica+"?musica="+musica,
+      { headers: this.headers }
+    );
+  }
+  buscarMusicaExata(musica: any): Observable <any> {
+    return this.http.get(
+      this.urlBuscarMusicaExata+"?musica="+musica,
       { headers: this.headers }
     );
   }
