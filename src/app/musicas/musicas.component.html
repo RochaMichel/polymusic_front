@@ -20,12 +20,11 @@
         <form #ProdutoForm="ngForm">
             <po-divider p-label="Dados gerais"></po-divider>
             <div class="po-row">
-                <po-input class="po-md-12"name="nomeMusica" p-label="Nome da musica"          [(ngModel)]="nomeMusica"    ></po-input>
-                <po-input class="po-md-4" name="album" p-label="Album"          [(ngModel)]="album"     ></po-input>
-                <po-datepicker class="po-md-4" name="ano" [(ngModel)]="ano" p-label="Data de lançamento"></po-datepicker>
-                <po-input class="po-md-4" name="categoria" p-label="Categoria"   [(ngModel)]="categoria"  ></po-input>
-                <po-combo class="po-md-6" name="editora" p-label="editora" [ngModel]="editora"
-                (ngModelChange)="editora = $event" [p-options]="Editora"> </po-combo>      
+                <po-input class="po-md-2"name="faixa"       p-label="Faixa"          [(ngModel)]="faixa"    ></po-input>
+                <po-input class="po-md-2"name="lado"        p-label="Lado"          [(ngModel)]="lado"    ></po-input>
+                <po-input class="po-md-8"name="nomeMusica"  p-label="Nome da musica"          [(ngModel)]="nomeMusica"    ></po-input>
+                <po-input class="po-md-8" name="autor"      p-label="Autor"          [(ngModel)]="autor"     ></po-input>
+                <po-input class="po-md-4" name="numeroTape" p-label="Numero Tape"          [(ngModel)]="numeroTape"     ></po-input>
             </div>
         </form>
     </po-modal>
@@ -34,16 +33,66 @@
         <form #ProdutoForm="ngForm">
             <po-divider p-label="Dados gerais"></po-divider>
             <div class="po-row">
-                <po-input class="po-md-12"name="nomeMusica" p-label="Nome da musica"  p-disabled="True"  [(ngModel)]="nomeMusica"    ></po-input>
-                <po-input class="po-md-4" name="album" p-label="Album"                p-disabled="True"  [(ngModel)]="album"     ></po-input>
-                <po-datepicker class="po-md-4" name="ano" [(ngModel)]="ano" p-disabled="True" p-label="Data de lançamento"></po-datepicker>
-                <po-input class="po-md-4" name="categoria" p-label="Categoria"        p-disabled="True"  [(ngModel)]="categoria"  ></po-input>
-                <po-combo class="po-md-6" name="editora" p-label="editora"          [p-disabled]="true"  [ngModel]="editora"
-                (ngModelChange)="editora = $event" [p-options]="Editora"> </po-combo>           
+                <po-input class="po-md-2" p-disabled="true" name="faixa"       p-label="Faixa"          [(ngModel)]="faixa"    ></po-input>
+                <po-input class="po-md-2" p-disabled="true" name="lado"        p-label="Lado"          [(ngModel)]="lado"    ></po-input>
+                <po-input class="po-md-8" p-disabled="true" name="nomeMusica"  p-label="Nome da musica"          [(ngModel)]="nomeMusica"    ></po-input>
+                <po-input class="po-md-8" p-disabled="true"  name="autor"      p-label="Autor"          [(ngModel)]="autor"     ></po-input>
+                <po-input class="po-md-4" p-disabled="true"  name="numeroTape" p-label="Numero Tape"          [(ngModel)]="numeroTape"     ></po-input>
             </div>
         </form>
     </po-modal>
-
+    <po-modal #modalExibeTape p-size="xl" p-click-out="false" [p-hide-close]="true" p-title="Tape">
+        <div class="wrapper">
+            <h1>PolyMusic</h1>
+            <div class="table-container">
+                <table class="header">
+                    <tbody>
+                        <tr>
+                            <td>Título:</td>
+                            <td contenteditable="false">{{ this.titulo }}</td>
+                        </tr>
+                        <tr>
+                            <td>Artista:</td>
+                            <td contenteditable="false">{{ this.artista }}</td>
+                        </tr>
+                        <tr>
+                            <td>Gravadora:</td>
+                            <td contenteditable="false">{{ this.gravadoraName }}</td>
+                        </tr>
+                        <tr>
+                            <td>Etiqueta:</td>
+                            <td contenteditable="false">{{ this.etiquetaName }}</td>
+                        </tr>
+                        <tr>
+                            <td>Produtor Musical:</td>
+                            <td contenteditable="false">{{ this.produtorMusical }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Faixa</th>
+                            <th>Lado</th>
+                            <th>Música</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Lista de Músicas -->
+                        <tbody>
+                            <tr *ngFor="let musica of imprimeMusica">
+                                <td contenteditable="false" >{{ musica.faixa }}</td>
+                                <td contenteditable="false">{{ musica.lado }}</td>
+                                <td contenteditable="false">
+                                    {{ musica.musica }} <br> ({{ musica.autor }})
+                                </td>
+                                
+                            </tr>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </po-modal>
     <po-modal #modalExport [p-primary-action]="confirmaExportacao" p-click-out="false" [p-hide-close]="false"
     p-title="Exportar consulta">
     <po-select name="select" p-label="Selecione o formato:" [p-options]="[

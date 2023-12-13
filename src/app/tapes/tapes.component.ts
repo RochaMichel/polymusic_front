@@ -12,6 +12,10 @@ import { PoGridModule } from '@po-ui/ng-components';
 import { ListaDeLogService } from '../log/log.service';
 import { ListaDeMusicaService } from '../musicas/musicas.service';
 import { ListaDeAcervoMusicalService } from '../acervo-musical/acervo-musical.service';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
+
+(pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
   selector: 'app-tapes',
@@ -20,6 +24,7 @@ import { ListaDeAcervoMusicalService } from '../acervo-musical/acervo-musical.se
 })
 export class TapesComponent {
   qrCodeImage: string = '';
+
 
   constructor(
     private poNotification: PoNotificationService,
@@ -36,10 +41,18 @@ export class TapesComponent {
   ) { }
 
   tipoExport: string = '';
+  etiquetaName: string = '';
+  gravadoraName: string = '';
   nome_artista!: string;
   nome_etiqueta!: string;
   nome_gravadora!: string;
   nome_tpTape!: string;
+  nome_musica!: string;
+  tiposMidia: Array<any> = new Array();
+  faixa!: string;
+  lado!: string;
+  autor!: string;
+  ids: Array<any> = new Array();
   tipoTape!: string;
   usuarios: Array<any> = new Array();
   Tapes: Array<any> = new Array();
@@ -77,24 +90,14 @@ export class TapesComponent {
   prateleira!: string;
   descricao!: string;
 
-  //---------AQUI
-  loading: boolean = false;
-  heroes: Array<any> = [];
-  multiLookup: Array<any> = [1495831666871, 1405833068599];
-  Colunas: Array<PoTableColumn> = [
-    { property: 'value', label: 'id' },
-    {
-      property: 'label',
-      label: 'Name'
-    }
-  ];
-
 
   @ViewChild("modalTape", { static: true }) modalTape!: PoModalComponent;
   @ViewChild("modalTapeView", { static: true }) modalTapeView!: PoModalComponent;
   @ViewChild("modalQRCode", { static: true }) modalQRCode!: PoModalComponent;
   @ViewChild('qrcodeImage', { static: false }) qrcodeImage!: ElementRef;
   @ViewChild('modalExport', { static: true }) modalExport!: PoModalComponent;
+  @ViewChild('modalExibeTape', { static: true }) modalExibeTape!: PoModalComponent;
+  @ViewChild('modalMusica', { static: true }) modalMusica!: PoModalComponent;
 
   ngOnInit(): void {
     this.tapesGravadora();
@@ -103,20 +106,22 @@ export class TapesComponent {
     this.carregaLista();
   }
   public readonly auditOptions: Array<any> = [
-    { value: '1', label: 'Functional menu' },
-    { value: '2', label: 'Online panel' },
-    { value: '3', label: 'Internet browser' },
-    { value: '4', label: 'Browser details' },
-    { value: '5', label: 'Transparent panel' },
-    { value: '6', label: 'Browser refresh' }
+    { value: '1', label: 'Tape 1/4' },
+    { value: '2', label: 'Tape 1' },
+    { value: '3', label: 'Tape 1/2' },
+    { value: '4', label: 'Tape 2' },
+    { value: '5', label: 'DAT' },
+    { value: '6', label: 'Vinil' },
+    { value: '7', label: 'CD' },
+    { value: '8', label: 'DVD' },
+    { value: '9', label: 'Outros' },
   ];
-
   public readonly colunas: Array<PoTableColumn> = [
     { property: "id", label: "ID", width: "10%" },
     { property: "titulo", label: "Titulo", width: "45%" },
+    { property: "novoNumero", label: "Numero tape", width: "20%" },
     { property: "tipo_tape", label: "Tipo do tape", width: "20%" },
-    { property: "data_lancamento", type: "Date", label: "Data de lançamento", width: "15%" },
-    { property: "novoNumero", label: "Novo numero", width: "15%" },
+
     {
       property: "acoes",
       label: "Ações",
@@ -128,31 +133,40 @@ export class TapesComponent {
 
   icons(): Array<any> {
     this.acoes.push({
+      action: this.Imprimir.bind(this),
+      icon: "po-icon po-icon-upload",
+      value: "4",
+      tooltip: "imprimir",
+    });
+    this.acoes.push({
       action: this.visualizar.bind(this),
       icon: "po-icon po-icon-eye",
       value: "2",
+      tooltip: "visualizar",
     });
     if (sessionStorage.getItem('laltera_tapes') === 'true') {
       this.acoes.push({
         action: this.Alterar.bind(this),
         icon: "po-icon po-icon-edit",
         value: "1",
+        tooltip: "alterar",
       });
     }
     if (sessionStorage.getItem('lexclui_tapes') === 'true') {
       this.acoes.push({
         action: this.excluir.bind(this),
         icon: "po-icon po-icon-delete",
-        value: "3"
+        value: "3",
+        tooltip: "excluir",
       });
     }
     return this.acoes;
   }
   public readonly columns: Array<PoTableColumn> = [
-    { property: "id", label: "ID", width: "10%" },
+    { property: "faixa", label: "faixa", width: "10%" },
+    { property: "lado", label: "lado", width: "10%" },
     { property: "musica", label: "Musica", width: "80%" },
-    { property: "album", label: "Album", width: "20%" },
-    { property: "ano", label: "Ano", width: "20%" },
+    { property: "autor", label: "Autor", width: "20%" },
     {
       property: "acoes",
       label: "Ações",
@@ -167,6 +181,7 @@ export class TapesComponent {
       action: this.excluirMusica.bind(this),
       icon: "po-icon po-icon-delete",
       value: "1",
+      tooltip: "excluir",
     });
     return this.acoesMusica;
   }
@@ -205,6 +220,7 @@ export class TapesComponent {
         }
       })
   }
+
   tapesTipo_tape() {
     this.Tipo_tape = [];
     this.listaTiposDeTapesService
@@ -222,41 +238,41 @@ export class TapesComponent {
         }
       })
   }
-
+  // async getMusica(event: any): Promise<void> {
+  //   this.listaTapesService.getArtista(event)
+  // }
   async buscaMusica(musica: any): Promise<void> {
+    //if(this.altera === false){
+    this.listaMusicas = [];
+    this.Music = [];
     if (musica) {
       for (let index = 0; index < musica.length; index++) {
-        this.listaMusicaService.buscarMusicaExata(musica[index]).subscribe((resposta) => {
-          this.Music.push(
-            {
-              id: resposta.id,
-              musica: resposta.musica,
-              album: resposta.album,
-              ano: resposta.ano,
-              acoes: ['1']
-            }
-          );
-        });
+        await this.listaMusicaService
+          .buscarMusicaExata(musica[index])
+          .subscribe((resposta) => {
+            this.Music.push(
+              {
+                id: resposta.id,
+                musica: resposta.musica,
+                faixa: '',
+                album: resposta.album,
+                ano: resposta.ano,
+                acoes: ['1']
+              }
+            );
+          });
       }
       this.listaMusicas = this.Music
     }
+    //}
   }
 
-  changeOptions(event: any): void {
-    this.loading = true;
-    this.listaTapesService.getHeroes(event).subscribe(
-      result => {
-        this.heroes = result;
-      },
-      err => console.error(err),
-      () => (this.loading = false)
-    );
-  }
-
-  
   criarTape() {
     this.listaMusicas = [];
+    this.Music = [];
     this.musica = 0;
+    this.Musica = [];
+    this.Artista = 0;
     this.titulo = '';
     this.novoNumero = '';
     this.gravadora = 0;
@@ -307,105 +323,132 @@ export class TapesComponent {
           })
     }
   }
+  async Imprimir(tape: any) {
+    this.tapeId = tape.id;
+    this.listaMusicas = [];
+    this.Music = [];
+    this.Musica = [];
+    await this.listaTapesService
+      .carregarTape(tape.id)
+      .subscribe((resposta) => {
+        this.listaNomesService
+          .buscarNomesExato(resposta.artista)
+          .subscribe((res) => { this.artista = res[0].nome })
+        this.listaEtiquetasService
+          .buscarEtiqueta(resposta.etiqueta)
+          .subscribe((res) => { this.etiquetaName = res[0].nome_etiqueta })
+        this.listaGravadorasService
+          .buscarGravadora(resposta.gravadora)
+          .subscribe((res) => { this.gravadoraName = res[0].nome_gravadora })
+        this.percentualArtistico = resposta.percentual_artistico
+        this.novoNumero = resposta.numero_tape
+        this.titulo = resposta.titulo
+        this.stream = resposta.stream
+        this.gravadora = resposta.gravadora
+        this.etiqueta = resposta.etiqueta
+        this.produtorMusical = resposta.produtor_musical
+        this.tipo_tape = resposta.tipo_tape
+        this.listaMusicaService.buscarMusicaExata(resposta.numero_tape).subscribe((res) => {
+          for (let index = 0; index < res.length; index++) {
+            this.Music.push(
+              {
+                id: res[index].id,
+                musica: res[index].musica,
+                faixa: res[index].faixa,
+                lado: res[index].lado,
+                autor: res[index].autor,
+                acoes: ["1"]
+              });
+          }
+          this.listaMusicas = this.Music;
+        });
 
-
-
+        this.modalExibeTape.open();
+      })
+  }
+  async IncluirMusica() {
+    this.modalMusica.open();
+  }
   async Alterar(tape: any) {
     this.tapeId = tape.id;
     this.listaMusicas = [];
     this.Music = [];
+    this.ids = [];
+    this.Musica = [];
+    this.altera = true;
     await this.listaTapesService
       .carregarTape(tape.id)
       .subscribe(async (resposta) => {
-        let data = new Date(resposta.data_lancamento.toString())
         this.percentualArtistico = resposta.percentual_artistico
-        this.novoNumero = resposta.novo_numero
+        this.novoNumero = resposta.numero_tape
         this.titulo = resposta.titulo
-        this.artista = resposta.artista
         this.gravadora = resposta.gravadora
+        this.tiposMidia = resposta.tipos_midia.split('/')
         this.stream = resposta.stream
         this.etiqueta = resposta.etiqueta
         this.produtorMusical = resposta.produtor_musical
         this.tipo_tape = resposta.tipo_tape
-        this.dataDeLancamento = new Date(data.setDate(data.getDate() + 1));
-        this.observacao = resposta.observacao
-        this.smi = resposta.smi
-        this.prateleira = resposta.prateleira
-        this.descricao = resposta.descricao
-        this.ListaAcervoMusicalService
-          .carregarAcervoMusical(tape.id)
-          .subscribe(async (resposta) => {
-            //this.acervoId = resposta[0].id
-            for (let index = 0; index < resposta.length; index++) {
-              if (resposta[index].bloqueado === 'N') {
-                await this.listaMusicaService
-                .buscarMusicaExata(resposta[index].id_musica)
-                .subscribe((resposta) => {
-                  this.Music.push(
-                    {
-                      id: resposta.id,
-                      musica: resposta.musica,
-                      album: resposta.album,
-                      ano: resposta.ano,
-                      acoes: ['1']
-                    }
-                  );
+        this.Artista = resposta.artista
+        this.listaNomesService
+          .buscarNomesExato(resposta.artista)
+          .subscribe((resposta) => { this.artista = resposta[0].nome })
+        this.listaMusicaService
+          .buscarMusicaExata(resposta.numero_tape)
+          .subscribe((res) => {
+            for (let index = 0; index < res.length; index++) {
+              this.Music.push(
+                {
+                  id: res[index].id,
+                  musica: res[index].musica,
+                  faixa: res[index].faixa,
+                  numero_tape: this.novoNumero,
+                  lado: res[index].lado,
+                  autor: res[index].autor,
+                  acoes: ["1"],
                 });
-              }
-              this.listaMusicas = this.Music
             }
+            this.listaMusicas = this.Music;
+            this.modalTape.open();
           });
-        this.altera = true;
-        this.modalTape.open();
       });
   }
   async visualizar(tape: any) {
     this.tapeId = tape.id;
     this.listaMusicas = [];
     this.Music = [];
-    this.listaTapesService
+    this.Musica = [];
+    await this.listaTapesService
       .carregarTape(tape.id)
       .subscribe((resposta) => {
-        this.listaNomesService.buscarNomesExato(resposta.artista).subscribe((resposta) => { this.artista = resposta[0].nome })
-        let data = new Date(resposta.data_lancamento.toString())
+        this.listaNomesService
+          .buscarNomesExato(resposta.artista)
+          .subscribe((resposta) => { this.artista = resposta[0].nome })
         this.percentualArtistico = resposta.percentual_artistico
-        this.novoNumero = resposta.novo_numero
+        this.novoNumero = resposta.numero_tape
         this.titulo = resposta.titulo
-        this.artista = resposta.artista
         this.stream = resposta.stream
         this.gravadora = resposta.gravadora
         this.etiqueta = resposta.etiqueta
         this.produtorMusical = resposta.produtor_musical
         this.tipo_tape = resposta.tipo_tape
-        this.dataDeLancamento = new Date(data.setDate(data.getDate() + 1));
-        this.observacao = resposta.observacao
-        this.smi = resposta.smi
-        this.prateleira = resposta.prateleira
-        this.descricao = resposta.descricao
-        this.ListaAcervoMusicalService
-          .carregarAcervoMusical(tape.id)
-          .subscribe((resposta) => {
-            for (let index = 0; index < resposta.length; index++) {
-              if (resposta[index].bloqueado === 'N') {
-                this.listaMusicaService.buscarMusicaExata(resposta[index].id_musica).subscribe((resposta) => {
-                  this.Music.push(
-                    {
-                      id: resposta.id,
-                      musica: resposta.musica,
-                      album: resposta.album,
-                      ano: resposta.ano,
-                      acoes: ['1']
+        this.listaMusicaService.buscarMusicaExata(resposta.numero_tape).subscribe((res) => {
+          for (let index = 0; index < res.length; index++) {
+            this.Music.push(
+              {
+                id: res[index].id,
+                musica: res[index].musica,
+                faixa: res[index].faixa,
+                lado: res[index].lado,
+                autor: res[index].autor,
+              });
+          }
+          this.listaMusicas = this.Music;
+        });
 
-                    }
-                  );
-                });
-              }
-              this.listaMusicas = this.Music
-            }
-          });
         this.modalTapeView.open();
       })
   }
+
   async carregaLista() {
     this.Tapes = [];
     this.listaTapes = [];
@@ -414,20 +457,13 @@ export class TapesComponent {
       .subscribe((resposta) => {
         for (let index = 0; index < resposta.length; index++) {
           if (resposta[index].bloqueado === 'N') {
-            let data = new Date(resposta[index].data_lancamento.toString())
             this.Tapes.push(
               {
                 id: resposta[index].id,
                 titulo: resposta[index].titulo,
                 tipo_tape: resposta[index].Tipos_de_tape.descricao,
-                data_lancamento: new Date(data.setDate(data.getDate() + 1)),
-                novoNumero: resposta[index].novo_numero,
-                percentualArtistico: resposta[index].percentual_artistico,
-                observacao: resposta[index].observacao,
-                smi: resposta[index].smi,
-                prateleira: resposta[index].prateleira,
-                descricao: resposta[index].descricao,
-                acoes: ["1", "2", "3"]
+                novoNumero: resposta[index].numero_tape,
+                acoes: ["1", "2", "3", "4"]
               }
             )
           }
@@ -445,20 +481,13 @@ export class TapesComponent {
           this.listaTapes = [];
           for (let index = 0; index < resposta.length; index++) {
             if (resposta[index].bloqueado === 'N') {
-              let data = new Date(resposta[index].data_lancamento.toString())
               this.Tapes.push(
                 {
                   id: resposta[index].id,
                   titulo: resposta[index].titulo,
                   tipo_tape: resposta[index].Tipos_de_tape.descricao,
-                  data_lancamento: new Date(data.setDate(data.getDate() + 1)),
-                  novoNumero: resposta[index].novo_numero,
-                  percentualArtistico: resposta[index].percentual_artistico,
-                  observacao: resposta[index].observacao,
-                  smi: resposta[index].smi,
-                  prateleira: resposta[index].prateleira,
-                  descricao: resposta[index].descricao,
-                  acoes: ["1", "2", "3"]
+                  novoNumero: resposta[index].numero_tape,
+                  acoes: ["1", "2", "3", "4"]
                 }
               )
             }
@@ -469,49 +498,20 @@ export class TapesComponent {
     this.carregaLista();
   }
 
-  /*async ConfirmaMusica() {
-    if (this.musica != 0) {
-      await this.listaMusicaService
-        .buscarMusica(this.musica)
-        .subscribe((resposta) => {
-          let retorno
-          for (let index = 0; index < this.music.length; index++) {
-            if (this.music[index].id === resposta[0].id) {
-              retorno = 'ja existe essa musica vinculada ao tape';
-            }
-          }
-          if (!retorno || retorno.length === 0) {
-            this.music.push(
-              {
-                id: resposta[0].id,
-                musica: resposta[0].musica,
-                album: resposta[0].album,
-                ano: resposta[0].ano,
-                acoes: ['1'],
-
-              });
-          } else {
-            this.poNotification.information(retorno)
-          }
-          this.listaMusicas = this.music
-        }
-        );
-    } else {
-      this.poNotification.error('preencha a musica para inserir na tabela');
-    }
-  }*/
-  
   confirmaTape: PoModalAction = {
     action: () => {
       if (this.altera) {
+        let TpMedia = '';
+        for (let index = 0; index < this.tiposMidia.length; index++) {
+          TpMedia += this.tiposMidia[index] + '/';
+        }
         let Log = {
           descricao_log: 'Tape: "' + this.titulo + '" do ID: ' + this.tapeId + ' alterado pelo usuario: ' + sessionStorage.getItem('usuario') + ', com Id: ' + sessionStorage.getItem('id'),
           data_log: this.getDataEHoraAtual(),
         }
         let tape = {
           id: this.tapeId,
-          percentual_artistico: this.percentualArtistico,
-          novo_numero: this.novoNumero,
+          numero_tape: this.novoNumero,
           titulo: this.titulo,
           artista: this.Artista,
           gravadora: this.gravadora,
@@ -519,34 +519,36 @@ export class TapesComponent {
           stream: this.stream,
           produtor_musical: this.produtorMusical,
           tipo_tape: this.tipo_tape,
-          data_lancamento: this.dataDeLancamento,
-          observacao: this.observacao,
-          smi: this.smi,
-          prateleira: this.prateleira,
-          descricao: this.descricao,
+          tipos_midia: TpMedia,
         }
 
         let tapeAcer = {
           tape: tape,
           acervo_musical: this.listaMusicas
         }
-        if (this.percentualArtistico != 0 && this.novoNumero != '' && this.titulo != ''
-          && this.Artista != 0 && this.gravadora != 0 && this.etiqueta != 0 && this.produtorMusical != ''
-          && this.tipo_tape != 0 && this.dataDeLancamento != undefined && this.observacao != ''
-          && this.smi != '' && this.prateleira != '' && this.descricao != '') {
+        if (this.novoNumero != '' && this.titulo != ''
+          && this.gravadora != 0 && this.etiqueta != 0 && this.produtorMusical != ''
+          && this.tipo_tape != 0) {
           this.listaTapesService
             .alteraTape(tapeAcer)
             .subscribe((res) => {
               this.ListaLogService
                 .criarLog(Log)
                 .subscribe((res) => {
+                  this.titulo = '';
+                  this.tipo_tape = 0;
+                  this.dataDeLancamento = undefined;
+                  this.listaMusicas = [];
+                  this.artista = 0;
+                  this.Artista = 0;
+                  this.titulo = '';
+                  this.gravadora = 0;
+                  this.musica = 0;
+                  this.Musica = [];
+                  this.poNotification.success(res.retorno);
                   this.ngOnInit();
                   this.modalTape.close();
                 });
-              this.poNotification.success(res.retorno);
-              this.titulo = '';
-              this.tipo_tape = 0;
-              this.dataDeLancamento = undefined;
             },
               (err) => {
                 this.poNotification.error(err.error.retorno);
@@ -560,48 +562,55 @@ export class TapesComponent {
           this.poNotification.error('Algum campo está em branco');
         }
       } else {
+        let TpMedia = '';
+        for (let index = 0; index < this.tiposMidia.length; index++) {
+          TpMedia += this.tiposMidia[index] + '/';
+        }
         let Log = {
           descricao_log: 'Tape: "' + this.titulo + '" incluido pelo usuario: ' + sessionStorage.getItem('usuario') + ', com Id: ' + sessionStorage.getItem('id'),
           data_log: this.getDataEHoraAtual(),
         }
         let tape = {
-          percentual_artistico: this.percentualArtistico,
-          novo_numero: this.novoNumero,
+          numero_tape: this.novoNumero,
           titulo: this.titulo,
           artista: this.Artista,
           gravadora: this.gravadora,
+          tipo_tape: this.tipo_tape,
           etiqueta: this.etiqueta,
           stream: this.stream,
           produtor_musical: this.produtorMusical,
-          tipo_tape: this.tipo_tape,
-          data_lancamento: this.dataDeLancamento,
-          observacao: this.observacao,
-          smi: this.smi,
-          prateleira: this.prateleira,
-          descricao: this.descricao,
+          tipos_midia: TpMedia,
         }
         let tapeAcer = {
           tape: tape,
           acervo_musical: this.listaMusicas
         }
-        if (this.percentualArtistico != 0 && this.novoNumero != '' && this.titulo != ''
-          && this.Artista != 0 && this.gravadora != 0 && this.etiqueta != 0 && this.produtorMusical != ''
-          && this.tipo_tape != 0 && this.dataDeLancamento != undefined && this.observacao != ''
-          && this.smi != '' && this.prateleira != '' && this.descricao != '') {
-          this.listaTapesService
+        this.listaTapesService
+        .buscarTapeExato(this.novoNumero)
+        .subscribe((res) => {
+          if ( this.novoNumero != '' && this.titulo != ''
+          && this.gravadora != 0 && this.etiqueta != 0 && this.produtorMusical != ''
+          && this.tipo_tape != 0) {
+            this.listaTapesService
             .criarTape(tapeAcer)
             .subscribe((res) => {
               this.ListaLogService
-                .criarLog(Log)
-                .subscribe((res) => {
-                  this.ngOnInit();
-                  this.modalTape.close();
-                });
-              this.poNotification.success(res.retorno);
-              this.titulo = '';
-              this.tipo_tape = 0;
-              this.dataDeLancamento = undefined;
-              this.listaMusicas = [];
+              .criarLog(Log)
+              .subscribe((res) => {
+                this.titulo = '';
+                this.tipo_tape = 0;
+                this.dataDeLancamento = undefined;
+                this.listaMusicas = [];
+                this.artista = 0;
+                this.Artista = 0;
+                this.titulo = '';
+                this.gravadora = 0;
+                this.musica = 0;
+                this.Musica = [];
+                this.poNotification.success(res.retorno);
+                this.ngOnInit();
+                this.modalTape.close();
+              });
             },
               (err) => {
                 this.poNotification.error(err.error.retorno);
@@ -611,13 +620,17 @@ export class TapesComponent {
                 this.ngOnInit();
                 this.modalTape.close();
               })
-        } else {
-          this.poNotification.error('Preencha todos os campos do tape');
-        }
-      }
-    },
-    label: "Confirmar"
-  };
+            } else {
+              this.poNotification.error('Preencha todos os campos do tape');
+            }
+          },
+          (err) => {
+            this.poNotification.error(err.error.retorno)
+          })
+          }
+        },
+        label: "Confirmar"
+      };
   getDataEHoraAtual(): string {
     const dataEHora = new Date();
     const dia = String(dataEHora.getDate()).padStart(2, '0');
@@ -632,7 +645,7 @@ export class TapesComponent {
   cancelarTape: PoModalAction = {
     action: () => {
       this.listaMusicas = [];
-      this.artista = '';
+      this.artista = 0;
       this.Artista = 0;
       this.titulo = '';
       this.gravadora = 0;
@@ -662,53 +675,13 @@ export class TapesComponent {
   }
 
   async abrirQRCode() {
-    await this.listaNomesService
-      .buscarNomes(this.Artista)
-      .subscribe(resposta => {
-        this.nome_artista = resposta[0].nome
-        //
-        this.listaEtiquetasService
-          .buscarEtiqueta(this.etiqueta)
-          .subscribe(resposta => {
-            this.nome_etiqueta = resposta[0].nome_etiqueta
-            //
-            this.listaGravadorasService
-              .buscarGravadora(this.gravadora)
-              .subscribe(resposta => {
-                this.nome_gravadora = resposta[0].nome_gravadora
-                //
-                this.listaTiposDeTapesService
-                  .buscarTiposDeTapes(this.tipo_tape)
-                  .subscribe(resposta => {
-                    this.nome_tpTape = resposta[0].descricao
-                    let texto = `
-                    Titulo: ${this.titulo}
-                    Produtor musical: ${this.produtorMusical}
-                    Artista: ${this.nome_artista}
-                    Gravadora: ${this.nome_gravadora}
-                    Etiqueta: ${this.nome_etiqueta}
-                    Produtor Musical: ${this.produtorMusical}
-                    Tipo de Tape: ${this.nome_tpTape}
-                    Smi: ${this.smi}
-                    Prateleira: ${this.prateleira}
-                    Descricao: ${this.descricao}
-                    Data de Lancamento: ${this.dataDeLancamento}
-                    Observacao : ${this.observacao}
-                    `;
-                    this.generateQRCode(texto);
-                    this.modalQRCode.open();
-                  }, (error => {
-                    this.poNotification.error(error)
-                  }));
-              }, (error => {
-                this.poNotification.error(error)
-              }));
-          }, (error => {
-            this.poNotification.error(error)
-          }));
-      }, (error => {
-        this.poNotification.error(error)
-      }));
+    const tapeID = this.tapeId
+    let texto = 'http://192.168.0.15:4200/lista-tapes/';
+    const url = `${texto}${tapeID}`;
+    this.generateQRCode(url);
+    this.modalQRCode.open();
+
+
   }
 
   confirmaQRCode: PoModalAction = {
@@ -724,7 +697,7 @@ export class TapesComponent {
       const newWin = window.open('', '_blank');
       if (newWin) {
         newWin.document.write('<html><body>');
-        newWin.document.write('<style>img { width: 80%; display: block; maartistain: 0 auto; }</style>'); // Estilos para a imagem
+        newWin.document.write('<style>img { width: 20%; display: block; maartistain: 0 auto; }</style>'); // Estilos para a imagem
         newWin.document.write('<div class="qrcode-container">'); // Container para centralizar a imagem
         newWin.document.write(elementToPrint.innerHTML); // Inclui o conteúdo do elemento para impressão
         newWin.document.write('</div>');
@@ -743,6 +716,41 @@ export class TapesComponent {
   Exportacao() {
     this.modalExport.open();
   }
+  confirmaMusica: PoModalAction = {
+    action: () => {
+      this.listaMusicas.push({
+        faixa: this.faixa,
+        lado: this.lado,
+        musica: this.nome_musica,
+        autor: this.autor,
+        numero_tape: this.novoNumero,
+      });
+      if (confirm("Deseja Incluir outra Musica?")) {
+        this.faixa = '';
+        this.lado = '';
+        this.nome_musica = '';
+        this.autor = '';
+      } else {
+        this.modalMusica.close();
+        this.faixa = '';
+        this.lado = '';
+        this.nome_musica = '';
+        this.autor = '';
+      }
+
+    },
+    label: "Confirmar"
+  };
+  cancelarMusica: PoModalAction = {
+    action: () => {
+      this.modalMusica.close();
+      this.faixa = '';
+      this.lado = '';
+      this.nome_musica = '';
+      this.autor = '';
+    },
+    label: "Cancelar"
+  };
 
   confirmaExportacao: PoModalAction = {
     action: () => {

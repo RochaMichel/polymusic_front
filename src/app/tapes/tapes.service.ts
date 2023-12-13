@@ -10,8 +10,15 @@ import { environment } from "src/environments/environment";
 export class ListaDeTapesService {
   
   urlListarTapes = `${environment.API}listarTapes`;
+  urlbuscaTapesNomes = `${environment.API}buscaTapesNomes`;
+  urlbuscaTapesGrava = `${environment.API}buscaTapesGrava`;
+  urlbuscaTapesEtique = `${environment.API}buscaTapesEtique`;
+  urlbuscaTapesTipo = `${environment.API}buscaTapesTipo`;
+  urllistaTapesSteam = `${environment.API}listaTapesSteam`;
   urlExcluirTape = `${environment.API}excluirTape`;
   urlBuscarTape = `${environment.API}buscarTape`;
+  urlBuscarTapeExato = `${environment.API}buscarTapeExato`;
+  urlBuscarTapeExato1 = `${environment.API}buscarTapeExato1`;
   urlCarregarTape = `${environment.API}carregarTape`;
   urlCriarTape = `${environment.API}criarTape`;
   urlAlterarTape = `${environment.API}alterarTape`;
@@ -23,6 +30,36 @@ export class ListaDeTapesService {
   listaTapes(): Observable <any> {
     return this.http.get(
       this.urlListarTapes,
+      { headers: this.headers }
+    );
+  }
+  listaTapesSteam(): Observable <any> {
+    return this.http.get(
+      this.urllistaTapesSteam,
+      { headers: this.headers }
+    );
+  }
+  buscarTapeNome(nome: any): Observable <any> {
+    return this.http.get(
+      this.urlbuscaTapesNomes+"?tapes="+nome,
+      { headers: this.headers }
+    );
+  }
+  buscarTapeGrava(nome: any): Observable <any> {
+    return this.http.get(
+      this.urlbuscaTapesGrava+"?tapes="+nome,
+      { headers: this.headers }
+    );
+  }
+  buscarTapeEtique(nome: any): Observable <any> {
+    return this.http.get(
+      this.urlbuscaTapesEtique+"?tapes="+nome,
+      { headers: this.headers }
+    );
+  }
+  buscarTapeTipo(nome: any): Observable <any> {
+    return this.http.get(
+      this.urlbuscaTapesTipo+"?tapes="+nome,
       { headers: this.headers }
     );
   }
@@ -64,8 +101,17 @@ export class ListaDeTapesService {
     );
   }
 
-  getHeroes(data: any): Observable<any> {
-    const values = data?.length ? data.toString() : data;
-    return this.http.get(`https://po-sample-api.onrender.com/v1/heroes?value=${values}`).pipe(pluck('items'));
+  buscarTapeExato(nome: any): Observable <any> {
+    return this.http.get(
+      this.urlBuscarTapeExato+"?tapes="+nome,
+      { headers: this.headers }
+    );
   }
+  buscarTapeExato1(nome: any): Observable <any> {
+    return this.http.get(
+      this.urlBuscarTapeExato1+"?tapes="+nome,
+      { headers: this.headers }
+    );
+  }
+ 
 }

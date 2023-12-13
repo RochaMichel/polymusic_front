@@ -21,6 +21,8 @@ import { TiposDeTapesComponent } from './tipos-de-tapes/tipos-de-tapes.component
 import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MusicaComponent } from './musicas/musicas.component';
+import { ListaTapesComponent } from './lista-tapes/lista-tapes.component';
+import { GraficoComponent } from './grafico/grafico.component';
 const ROTAS: Routes = [
   {
     path: "usuarios",
@@ -33,8 +35,12 @@ const ROTAS: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: "artistas",
-    component: ArtistasComponent,
+    path: "lista-tapes/:id",
+    component: ListaTapesComponent
+  },
+  {
+    path: "grafico",
+    component: GraficoComponent,
     canActivate: [AuthGuard]
   },
   {
@@ -93,6 +99,8 @@ const ROTAS: Routes = [
     TapesComponent,
     TiposDeTapesComponent,
     MusicaComponent,
+    ListaTapesComponent,
+    GraficoComponent,
   ],
   imports: [
     BrowserModule,

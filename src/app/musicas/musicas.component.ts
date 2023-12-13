@@ -5,24 +5,45 @@ import { ListaDeMusicaService } from './musicas.service';
 import { Exportacao } from '../exportacao/exportacao.service';
 import { ListaDeEditorasService } from '../editoras/editoras.service';
 import { ListaDeLogService } from '../log/log.service';
+import { ListaDeTapesService } from '../tapes/tapes.service';
+import { ListaDeNomesService } from '../nomes/nomes.service';
+import { ListaDeGravadorasService } from '../gravadoras/gravadoras.service';
+import { ListaDeEtiquetasService } from '../etiquetas/etiquetas.service';
+import { ListaDeTiposDeTapesService } from '../tipos-de-tapes/tipos-de-tapes.service';
 @Component({
   selector: 'app-musicas',
   templateUrl: './musicas.component.html',
   styleUrls: ['./musicas.component.css']
 })
 export class MusicaComponent {
+
+
   constructor(
     private poNotification: PoNotificationService,
+    private listaTapesService: ListaDeTapesService,
+    private listaNomesService: ListaDeNomesService,
+    private listaGravadorasService: ListaDeGravadorasService,
+    private listaEtiquetasService: ListaDeEtiquetasService,
+    private listaTiposDeTapesService: ListaDeTiposDeTapesService,
     private listaMusicasService: ListaDeMusicaService,
-    private listaEditorasService: ListaDeEditorasService,
     private listaLogService: ListaDeLogService,
     private exportacao: Exportacao,
     private router: Router
   ) { }
 
+  tapeId: string = '';
+  titulo: string = '';
+  artista: string = '';
+  gravadoraName: string = '';
+  etiquetaName: string = '';
+  produtorMusical: string = '';
+  qrCodeImage: string = '';
+  faixa: string = '';
+  lado: string = '';
+  numeroTape: string = '';
   tipoExport: string = '';
   tipoCliente!: string;
-  usuarios: Array<any> = new Array();
+  imprimeMusica: Array<any> = new Array();
   Editora: Array<any> = new Array();
   Musicas: Array<any> = new Array();
   acoes: Array<any> = new Array();
@@ -38,7 +59,7 @@ export class MusicaComponent {
   cpfCnpj!: string;
   rg!: string;
   nomeMusica!: string;
-  album!: string;
+  autor!: string;
   ano!: Date | undefined;
   categoria!: string;
   editora!: Number;
@@ -48,18 +69,20 @@ export class MusicaComponent {
   @ViewChild("modalMusica", { static: true }) modalMusica!: PoModalComponent;
   @ViewChild("modalMusicaView", { static: true }) modalMusicaView!: PoModalComponent;
   @ViewChild('modalExport', { static: true }) modalExport!: PoModalComponent;
+  @ViewChild('modalExibeTape', { static: true }) modalExibeTape!: PoModalComponent;
+  @ViewChild("modalQRCode", { static: true }) modalQRCode!: PoModalComponent;
 
   ngOnInit(): void {
-    this.carregaEditora();
     this.carregaLista();
   }
 
   public readonly colunas: Array<PoTableColumn> = [
-    { property: "id", label: "ID", width: "10%" },
-    { property: "musica", label: "Musica", width: "45%" },
-    { property: "album", label: "Album", width: "15%" },
-    { property: "ano", label: "Ano", width: "10%" },
-    { property: "editora", label: "Editora", width: "10%" },
+    { property: "id", label: "ID", width: "5%" },
+    { property: "faixa", label: "Faixa", width: "5%" },
+    { property: "lado", label: "Lado", width: "5%" },
+    { property: "musica", label: "Musica", width: "30%" },
+    { property: "autor", label: "Autor", width: "30%" },
+    { property: "numeroTape", label: "Numero tape", width: "10%" },
     {
       property: "acoes",
       label: "Ações",
@@ -70,6 +93,12 @@ export class MusicaComponent {
   ];
 
   icons(): Array<any> {
+    this.acoes.push({
+      action: this.Imprimir.bind(this),
+      icon: "po-icon po-icon-upload",
+      value: "4",
+      tooltip: "imprimir",
+    });
     this.acoes.push({
       action: this.visualizar.bind(this),
       icon: "po-icon po-icon-eye",
@@ -94,28 +123,14 @@ export class MusicaComponent {
 
   criarMusica() {
     this.nomeMusica = '';
-    this.album = '';
-    this.ano = undefined;
-    this.categoria = '';
-    this.editora = 0;
+    this.autor = '';
+    this.faixa = '';
+    this.lado = '';
+    this.numeroTape = '';
     this.modalMusica.open();
   }
 
-  carregaEditora() {
-    this.Editora = [];
-    this.listaEditorasService
-      .listaEditora()
-      .subscribe((resposta) => {
-        for (let index = 0; index < resposta.length; index++) {
-          this.Editora.push(
-            {
-              label: resposta[index].nome_editora,
-              value: resposta[index].id,
-            }
-          )
-        }
-      })
-  }
+
 
   excluir(Musica: any) {
     if (confirm("Deseja excluir o musica?")) {
@@ -151,17 +166,55 @@ export class MusicaComponent {
     return `${dia}/${mes}/${ano} ${hora}:${minutos}:${segundos}`;
 
   }
+  async Imprimir(musica: any) {
+    this.imprimeMusica = [];
+    await this.listaTapesService
+      .buscarTapeExato1(musica.numeroTape)
+      .subscribe((resposta) => {
+        this.listaNomesService
+          .buscarNomesExato(resposta.artista)
+          .subscribe((res) => { this.artista = res[0].nome })
+        this.listaEtiquetasService
+          .buscarEtiqueta(resposta.etiqueta)
+          .subscribe((res) => { this.etiquetaName = res[0].nome_etiqueta })
+        this.listaGravadorasService
+          .buscarGravadora(resposta.gravadora)
+          .subscribe((res) => { this.gravadoraName = res[0].nome_gravadora })
+        this.tapeId = resposta.id  
+        this.titulo = resposta.titulo
+        this.produtorMusical = resposta.produtor_musical
+        this.listaMusicasService.buscarMusicaExata(resposta.numero_tape).subscribe((res) => {
+          for (let index = 0; index < res.length; index++) {
+            this.imprimeMusica.push(
+              {
+                id: res[index].id,
+                musica: res[index].musica,
+                faixa: res[index].faixa,
+                lado: res[index].lado,
+                autor: res[index].autor,
+                acoes: ["1"]
+              });
+          }
+          this.imprimeMusica;
+        });
+        this.modalExibeTape.open();
+      },
+      (err) =>{
+          this.poNotification.error(err.error.retorno)
+      });
+    
+
+  }
   Alterar(visuMusica: any) {
     this.musicaId = visuMusica.id;
     this.listaMusicasService
       .carregarMusica(visuMusica.id)
       .subscribe((resposta) => {
-        let data = new Date(resposta.ano.toString())
+        this.faixa = resposta.faixa
+        this.lado = resposta.lado
+        this.numeroTape = resposta.numero_tape
         this.nomeMusica = resposta.musica
-        this.album = resposta.album
-        this.ano = new Date(data.setDate(data.getDate() + 1));
-        this.editora = resposta.editora
-        this.categoria = resposta.categoria
+        this.autor = resposta.autor
         this.altera = true;
         this.modalMusica.open();
       })
@@ -172,12 +225,12 @@ export class MusicaComponent {
     this.listaMusicasService
       .carregarMusica(visuMusica.id)
       .subscribe((resposta) => {
-        let data = new Date(resposta.ano.toString())
+        this.faixa = resposta.faixa
+        this.lado = resposta.lado
+        this.numeroTape = resposta.numero_tape
         this.nomeMusica = resposta.musica
-        this.album = resposta.album
-        this.ano = new Date(data.setDate(data.getDate() + 1));
-        this.editora = resposta.editora
-        this.categoria = resposta.categoria
+        this.autor = resposta.autor
+
         this.modalMusicaView.open();
       })
   }
@@ -188,15 +241,15 @@ export class MusicaComponent {
       .subscribe((resposta) => {
         for (let index = 0; index < resposta.length; index++) {
           if (resposta[index].bloqueado === 'N') {
-            let data = new Date(resposta[index].ano.toString())
             this.Musicas.push(
               {
                 id: resposta[index].id,
+                faixa: resposta[index].faixa,
+                lado: resposta[index].lado,
                 musica: resposta[index].musica,
-                album: resposta[index].album,
-                ano: new Date(data.setDate(data.getDate() + 1)),
-                editora: resposta[index].Editora.nome_editora,
-                acoes: ["1", "2", "3"]
+                autor: resposta[index].autor,
+                numeroTape: resposta[index].numero_tape,
+                acoes: ["1", "2", "3", "4"]
               }
             )
           }
@@ -214,15 +267,15 @@ export class MusicaComponent {
           this.listaMusicas = [];
           for (let index = 0; index < resposta.length; index++) {
             if (resposta[index].bloqueado === 'N') {
-              let data = new Date(resposta[index].ano.toString())
               this.Musicas.push(
                 {
                   id: resposta[index].id,
+                  faixa: resposta[index].faixa,
+                  lado: resposta[index].lado,
                   musica: resposta[index].musica,
-                  album: resposta[index].album,
-                  ano: new Date(data.setDate(data.getDate() + 1)),
-                  editora: resposta[index].Editora.nome_editora,
-                  acoes: ["1", "2", "3"]
+                  autor: resposta[index].autor,
+                  numeroTape: resposta[index].numero_tape,
+                  acoes: ["1", "2", "3", "4"]
                 }
               )
             }
@@ -243,10 +296,10 @@ export class MusicaComponent {
         this.musica = {
           id: this.musicaId,
           musica: this.nomeMusica,
-          album: this.album,
-          ano: this.ano,
-          categoria: this.categoria,
-          editora: this.editora
+          autor: this.autor,
+          faixa: this.faixa,
+          lado: this.lado,
+          numero_tape: this.numeroTape,
         }
         this.listaMusicasService
           .alteraMusica(this.musica)
@@ -274,12 +327,12 @@ export class MusicaComponent {
         }
         this.musica = {
           musica: this.nomeMusica,
-          album: this.album,
-          ano: this.ano,
-          categoria: this.categoria,
-          editora: this.editora
+          autor: this.autor,
+          faixa: this.faixa,
+          lado: this.lado,
+          numero_tape: this.numeroTape,
         }
-        if (this.nomeMusica != '') {
+        if (this.nomeMusica != '' && this.numeroTape != ' ') {
           this.listaMusicasService
             .criarMusica(this.musica)
             .subscribe(
@@ -308,7 +361,7 @@ export class MusicaComponent {
   cancelarMusica: PoModalAction = {
     action: () => {
       this.nomeMusica = '';
-      this.album = '';
+      this.autor = '';
       this.ano = undefined;
       this.categoria = '';
       this.editora = 0;
@@ -317,7 +370,7 @@ export class MusicaComponent {
     },
     label: "Cancelar"
   };
-
+ 
   Exportacao() {
     this.modalExport.open();
   }

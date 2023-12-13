@@ -1,0 +1,81 @@
+    <style>
+    .wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+    }
+    .table-container {
+        overflow-x: auto;
+        max-height: 550px;
+        overflow-y: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+        font-size: 14px;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .header th, .header td {
+        padding-bottom: 8px;
+        font-weight: bold;
+    }
+    </style>
+    <div class="wrapper">
+        <h1>PolyMusic</h1>
+        <div class="table-container">
+            <table class="header">
+                <tbody>
+                    <tr>
+                        <td>Título:</td>
+                        <td contenteditable="false">{{ this.titulo }}</td>
+                    </tr>
+                    <tr>
+                        <td>Artista:</td>
+                        <td contenteditable="false">{{ this.artista }}</td>
+                    </tr>
+                    <tr>
+                        <td>Gravadora:</td>
+                        <td contenteditable="false">{{ this.gravadoraName }}</td>
+                    </tr>
+                    <tr>
+                        <td>Etiqueta:</td>
+                        <td contenteditable="false">{{ this.etiquetaName }}</td>
+                    </tr>
+                    <tr>
+                        <td>Produtor Musical:</td>
+                        <td contenteditable="false">{{ this.produtorMusical }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Faixa</th>
+                        <th>Lado</th>
+                        <th>Música</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Lista de Músicas -->
+                    <tbody>
+                        <tr *ngFor="let musica of listaMusicas">
+                            <td contenteditable="false">{{ musica.faixa }}</td>
+                            <td contenteditable="false">{{ musica.lado }}</td>
+                            <td contenteditable="false">
+                                {{ musica.musica }} <br> ({{ musica.autor }})
+                            </td>
+                            
+                        </tr>
+                    </tbody>
+            </table>
+        </div>
+    </div>

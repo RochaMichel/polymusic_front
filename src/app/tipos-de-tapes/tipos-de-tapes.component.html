@@ -1,49 +1,113 @@
 <!-- <po-page-edit p-title="Orçamentos" class="p-m-0"> -->
-    <po-page-default p-title="Sessão de tipo de tape">
+<po-page-default p-title="Sessão de tipo de tape">
+    <div class="po-row">
+        <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar tipo de tape" [(ngModel)]="TipoDeTapes"
+            (p-change-model)="buscarTiposDeTapes()" p-icon="po-icon po-icon-search">
+        </po-input>
+
+        <po-button class="po-m-5" style="margin-left: auto" p-label="Exportar" (p-click)="Exportacao()"></po-button>
+        <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir tipo de tape"
+            (p-click)="criarTipoDeTapes()" p-type="primary">
+        </po-button>
+    </div>
+    <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
+        p-container="light" [p-columns]="colunas" [p-items]="listaTiposDeTapes" p-container="shadow">
+    </po-table>
+</po-page-default>
+
+<po-modal #modalTipoDeTapes [p-primary-action]="confirmaTipoDeTapes" [p-secondary-action]="cancelarTipoDeTapes"
+    p-click-out="false" [p-hide-close]="true" p-title="Tipo de Tape">
+    <form #ProdutoForm="ngForm">
+        <po-divider p-label="Dados gerais"></po-divider>
         <div class="po-row">
-            <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar tipo de tape" [(ngModel)]="TipoDeTapes"
-                (p-change-model)="buscarTiposDeTapes()" p-icon="po-icon po-icon-search">
-            </po-input>
-    
-            <po-button class="po-m-5" style="margin-left: auto" p-label="Exportar" (p-click)="Exportacao()"></po-button>
-            <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir tipo de tape" (p-click)="criarTipoDeTapes()"
-                p-type="primary">
-            </po-button>
+            <po-input class="po-md-2" name="codigo" p-label="Codigo" [(ngModel)]="codigo"></po-input>
+            <po-input class="po-md-12" name="descricao" p-label="Descrição" [(ngModel)]="descricao"></po-input>
         </div>
-        <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true" p-container="light"
-            [p-columns]="colunas" [p-items]="listaTiposDeTapes" p-container="shadow">
-        </po-table>
-    </po-page-default>
-    
-    <po-modal #modalTipoDeTapes [p-primary-action]="confirmaTipoDeTapes" [p-secondary-action]="cancelarTipoDeTapes" p-click-out="false"
-        [p-hide-close]="true" p-title="Tipo de Tape">
-        <form #ProdutoForm="ngForm">
-            <po-divider p-label="Dados gerais"></po-divider>
-            <div class="po-row">
-                <po-input class="po-md-2" name="codigo" p-label="Codigo" [(ngModel)]="codigo" ></po-input>
-                <po-input class="po-md-12" name="descricao" p-label="Descrição" [(ngModel)]="descricao" ></po-input>
-            </div>
-        </form>
-    </po-modal>
+    </form>
+</po-modal>
+<po-modal #modalNomeTape p-size="xl" p-click-out="false" [p-hide-close]="true" p-title="Tipo de Tape">
+    <form #ProdutoForm="ngForm">
+        <po-divider p-label="Dados gerais"></po-divider>
+        <div class="po-row">
+            <po-input class="po-md-2" name="codigo" p-label="Codigo" p-disabled="true" [(ngModel)]="codigo"></po-input>
+            <po-input class="po-md-12" name="descricao" p-label="Descrição" p-disabled="true"
+                [(ngModel)]="descricao"></po-input>
+        </div>
+    </form>
+    <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
+        p-container="light" [p-columns]="colunasTape" [p-items]="listaTapes" p-container="shadow">
+    </po-table>
+</po-modal>
+<po-modal #modalExibeTape p-size="xl" p-click-out="false" [p-hide-close]="true" p-title="Tape">
+    <div class="wrapper">
+        <h1>PolyMusic</h1>
+        <div class="table-container">
+            <table class="header">
+                <tbody>
+                    <tr>
+                        <td>Título:</td>
+                        <td contenteditable="false">{{ this.titulo }}</td>
+                    </tr>
+                    <tr>
+                        <td>Artista:</td>
+                        <td contenteditable="false">{{ this.artista }}</td>
+                    </tr>
+                    <tr>
+                        <td>Gravadora:</td>
+                        <td contenteditable="false">{{ this.gravadoraName }}</td>
+                    </tr>
+                    <tr>
+                        <td>Etiqueta:</td>
+                        <td contenteditable="false">{{ this.etiquetaName }}</td>
+                    </tr>
+                    <tr>
+                        <td>Produtor Musical:</td>
+                        <td contenteditable="false">{{ this.produtorMusical }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Faixa</th>
+                        <th>Lado</th>
+                        <th>Música</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Lista de Músicas -->
+                <tbody>
+                    <tr *ngFor="let musica of listaMusicas">
+                        <td contenteditable="false">{{ musica.faixa }}</td>
+                        <td contenteditable="false">{{ musica.lado }}</td>
+                        <td contenteditable="false">
+                            {{ musica.musica }} <br> ({{ musica.autor }})
+                        </td>
 
-    <po-modal #modalTipoDeTapesView p-click-out="false"
-        [p-hide-close]="true" p-title="Tipo de Tape">
-        <form #ProdutoForm="ngForm">
-            <po-divider p-label="Dados gerais"></po-divider>
-            <div class="po-row">
-                <po-input class="po-md-2" name="codigo" p-label="Codigo" p-disabled="true" [(ngModel)]="codigo" ></po-input>
-                <po-input class="po-md-12" name="descricao" p-label="Descrição" p-disabled="true" [(ngModel)]="descricao" ></po-input>
-            </div>
-        </form>
-    </po-modal>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</po-modal>
 
-    <po-modal #modalExport [p-primary-action]="confirmaExportacao" p-click-out="false" [p-hide-close]="false"
+<po-modal #modalTipoDeTapesView p-click-out="false" [p-hide-close]="true" p-title="Tipo de Tape">
+    <form #ProdutoForm="ngForm">
+        <po-divider p-label="Dados gerais"></po-divider>
+        <div class="po-row">
+            <po-input class="po-md-2" name="codigo" p-label="Codigo" p-disabled="true" [(ngModel)]="codigo"></po-input>
+            <po-input class="po-md-12" name="descricao" p-label="Descrição" p-disabled="true"
+                [(ngModel)]="descricao"></po-input>
+        </div>
+    </form>
+</po-modal>
+
+<po-modal #modalExport [p-primary-action]="confirmaExportacao" p-click-out="false" [p-hide-close]="false"
     p-title="Exportar consulta">
     <po-select name="select" p-label="Selecione o formato:" [p-options]="[
     { label: 'CSV (Separado por ponto e vírgula;)', value: 'csv' },
     { label: 'PDF', value: 'pdf' }
-  ]" [ngModel]="tipoExport"
-  (ngModelChange)="tipoExport = $event">
+  ]" [ngModel]="tipoExport" (ngModelChange)="tipoExport = $event">
     </po-select>
 </po-modal>
-    <!-- </po-page-edit> -->
+<!-- </po-page-edit> -->

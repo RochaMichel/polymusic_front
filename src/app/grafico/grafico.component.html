@@ -1,0 +1,17 @@
+<po-page-default p-title="Dashboard">
+    <div class="po-row">
+        <po-widget class="po-md-6" [p-height]="130">
+            <div style="color: green;" class="po-font-subtitle po-text-center po-pt-1"> No stream
+            </div>
+            <div class="po-font-title po-text-center po-pt-1">{{this.quantidadeN}}</div>
+        </po-widget>
+        <po-widget class="po-md-6" [p-height]="130">
+            <div style="color: blue;" class="po-font-subtitle po-text-center po-pt-1"> On stream
+            </div>
+            <div class="po-font-title po-text-center po-pt-1">{{this.quantidadeS}}</div>
+        </po-widget>
+        <po-chart class="po-md-12 po-mt-2" p-title="Tapes stream " [p-series]="valoresGrafico">
+        </po-chart>
+        <h4>Quantidade total de tapes {{ this.quantidadeTotal }}</h4>
+    </div>
+</po-page-default>

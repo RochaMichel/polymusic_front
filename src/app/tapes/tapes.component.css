@@ -5,3 +5,52 @@
     height: 100%; /* Garante que o contêiner ocupe a altura total do pai se necessário */
   }
 
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+  
+  td {
+    text-align: left;
+  }
+  
+  td[contenteditable="true"]:focus {
+    outline: 2px solid dodgerblue;
+  }
+  .wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+}
+.table-container {
+    overflow-x: auto;
+    overflow-y: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+    font-size: 14px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.header th, .header td {
+    padding-bottom: 8px;
+    font-weight: bold;
+}

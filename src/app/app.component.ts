@@ -22,6 +22,7 @@ export class AppComponent {
   ) { }
 
    itens(): Array<any> {
+
     if (sessionStorage.getItem('lvisualiza_usuario') === 'true') {
       this.array_itens.push(
         { label: 'Usuarios', link: '/usuarios' },
@@ -32,21 +33,16 @@ export class AppComponent {
         { label: 'Perfil de acesso', link: '/perfil-de-acesso' },
       );
     }
-    if (sessionStorage.getItem('lvisualiza_artistas') === 'true') {
-      this.array_itens.push(
-        { label: 'Artistas', link: '/artistas' },
-      );
-    }
     if (sessionStorage.getItem('lvisualiza_musica') === 'true') {
       this.array_itens.push(
         { label: 'Musicas', link: '/musicas' },
       );
     }
-    if (sessionStorage.getItem('lvisualiza_editoras')=== 'true') {
-      this.array_itens.push(
-        { label: 'Editoras', link: '/editoras' },
-      );
-    }
+    //if (sessionStorage.getItem('lvisualiza_editoras')=== 'true') {
+    //  this.array_itens.push(
+    //    { label: 'Editoras', link: '/editoras' },
+    //  );
+    //}
     if (sessionStorage.getItem('lvisualiza_etiquetas')=== 'true') {
       this.array_itens.push(
         { label: 'Etiquetas', link: '/etiquetas' },
@@ -59,7 +55,7 @@ export class AppComponent {
     }
     if (sessionStorage.getItem('lvisualiza_nomes')=== 'true') {
       this.array_itens.push(
-        { label: 'Nomes', link: '/nomes' },
+        { label: 'Artistas', link: '/nomes' },
       );
     }
     if (sessionStorage.getItem('lvisualiza_tapes')=== 'true') {
@@ -72,6 +68,9 @@ export class AppComponent {
         { label: 'Tipos de tapes', link: '/tipos-de-tapes' },
       );
     }
+    this.array_itens.push(
+      { label: 'Dashboard', link: '/grafico' },
+    );
     return this.array_itens;
   }
   tape(): string {
@@ -90,12 +89,6 @@ export class AppComponent {
     },
   ];
   readonly navActions: Array<PoNavbarIconAction> = [
-    {
-      icon: "po-icon po-icon-cart",
-      label: "Tapes",
-      link: this.tape(),
-      tooltip: "Tapes"
-    },
     // { icon:'po-icon po-icon-users', label: 'Clientes', link: '/customer-list', tooltip: "Clientes" },
     {
       icon: "po-icon po-icon-exit",

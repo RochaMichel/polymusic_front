@@ -4,6 +4,10 @@ import { PoModalAction, PoModalComponent, PoNotificationService, PoTableColumn }
 import { ListaDeGravadorasService } from './gravadoras.service';
 import { Exportacao } from '../exportacao/exportacao.service';
 import { ListaDeLogService } from '../log/log.service';
+import { ListaDeNomesService } from '../nomes/nomes.service';
+import { ListaDeEtiquetasService } from '../etiquetas/etiquetas.service';
+import { ListaDeMusicaService } from '../musicas/musicas.service';
+import { ListaDeTapesService } from '../tapes/tapes.service';
 
 @Component({
   selector: 'app-gravadoras',
@@ -11,14 +15,28 @@ import { ListaDeLogService } from '../log/log.service';
   styleUrls: ['./gravadoras.component.css']
 })
 export class GravadorasComponent {
+  novoNumero: any;
   constructor(
     private poNotification: PoNotificationService,
+    private listaNomesService: ListaDeNomesService,
+    private listaTapesService: ListaDeTapesService,
+    private listaEtiquetasService: ListaDeEtiquetasService,
+    private listaMusicaService: ListaDeMusicaService,
     private listaGravadorasService: ListaDeGravadorasService,
     private ListaLogService: ListaDeLogService,
     private exportacao: Exportacao,
     private router: Router
   ) { }
-
+  
+  
+  titulo: string = '';
+  artista: string = '';
+  gravadoraName: string = '';
+  etiquetaName: string = '';
+  produtorMusical: string = '';
+  listaMusicas: Array<any> = new Array();
+  listaTapes: Array<any> = new Array();
+  acoesTape: Array<any> = new Array();
   tipoExport: string = '';
   tipoCliente!: string;
   acoes: Array<any> = new Array();
@@ -50,9 +68,33 @@ export class GravadorasComponent {
 
   @ViewChild("modalGravadora", { static: true }) modalGravadora!: PoModalComponent;
   @ViewChild("modalGravadoraView", { static: true }) modalGravadoraView!: PoModalComponent;
+  @ViewChild("modalNomeTape", { static: true }) modalNomeTape!: PoModalComponent;
   @ViewChild('modalExport', { static: true }) modalExport!: PoModalComponent;
+  @ViewChild('modalExibeTape', { static: true }) modalExibeTape!: PoModalComponent;
   ngOnInit(): void {
     this.carregaLista();
+  }
+
+  public readonly colunasTape: Array<PoTableColumn> = [
+    { property: "id", label: "ID", width: "10%" },
+    { property: "titulo", label: "Titulo", width: "45%" },
+    { property: "novoNumero", label: "Numero tape", width: "20%" },
+    {
+      property: "acoes",
+      label: "Ações",
+      type: "icon",
+      width: "5%",
+      icons: this.iconsTape(),
+    },
+  ];
+  iconsTape(): Array<any> {
+    this.acoesTape.push({
+      action: this.ImprimirTape.bind(this),
+      icon: "po-icon po-icon-upload",
+      value: "1",
+      tooltip: "imprimir",
+    });
+    return this.acoesTape
   }
 
   public readonly colunas: Array<PoTableColumn> = [
@@ -68,6 +110,12 @@ export class GravadorasComponent {
   ];
 
   icons(): Array<any> {
+    this.acoes.push({
+      action: this.Imprimir.bind(this),
+      icon: "po-icon po-icon-upload",
+      value: "4",
+      tooltip: "imprimir",
+    });
     this.acoes.push({
       action: this.visualizar.bind(this),
       icon: "po-icon po-icon-eye",
@@ -130,6 +178,64 @@ export class GravadorasComponent {
     return `${dia}/${mes}/${ano} ${hora}:${minutos}:${segundos}`;
 
   }
+  Imprimir(gravadora: any) {
+    this.listaGravadorasService
+      .carregarGravadora(gravadora.id)
+      .subscribe((resposta) => {
+        this.listaTapesService
+          .buscarTapeGrava(gravadora.id)
+          .subscribe((resposta) => {
+            for (let index = 0; index < resposta.length; index++) {
+              if (resposta[index].bloqueado === 'N') {
+                this.listaTapes.push(
+                  {
+                    id: resposta[index].id,
+                    titulo: resposta[index].titulo,
+                    novoNumero: resposta[index].numero_tape,
+                    acoes: ["1"]
+                  }
+                )
+              }
+            }
+          })
+          this.nome_gravadora = resposta.nome_gravadora
+          this.modalNomeTape.open();
+      });
+  }
+  async ImprimirTape(tape: any) {
+    await this.listaTapesService
+      .carregarTape(tape.id)
+      .subscribe((resposta) => {
+        this.listaNomesService
+          .buscarNomesExato(resposta.artista)
+          .subscribe((res) => { this.artista = res[0].nome })
+        this.listaEtiquetasService
+          .buscarEtiqueta(resposta.etiqueta)
+          .subscribe((res) => { this.etiquetaName = res[0].nome_etiqueta })
+        this.listaGravadorasService
+          .buscarGravadora(resposta.gravadora)
+          .subscribe((res) => { this.gravadoraName = res[0].nome_gravadora })
+        this.novoNumero = resposta.numero_tape
+        this.titulo = resposta.titulo
+        this.produtorMusical = resposta.produtor_musical
+        this.listaMusicaService.buscarMusicaExata(resposta.numero_tape).subscribe((res) => {
+          for (let index = 0; index < res.length; index++) {
+            this.listaMusicas.push(
+              {
+                id: res[index].id,
+                musica: res[index].musica,
+                faixa: res[index].faixa,
+                lado: res[index].lado,
+                autor: res[index].autor,
+                acoes: ["1"]
+              });
+          }
+        });
+
+        this.modalExibeTape.open();
+      })
+
+  }
   Alterar(gravadora: any) {
     this.gravadoraId = gravadora.id;
     this.listaGravadorasService
@@ -160,7 +266,7 @@ export class GravadorasComponent {
               {
                 id: resposta[index].id,
                 nome_gravadora: resposta[index].nome_gravadora,
-                acoes: ["1", "2", "3"]
+                acoes: ["1", "2", "3","4"]
               }
             )
           }
@@ -181,7 +287,7 @@ export class GravadorasComponent {
                 {
                   id: resposta[index].id,
                   nome_gravadora: resposta[index].nome_gravadora,
-                  acoes: ["1", "2", "3"]
+                  acoes: ["1", "2", "3","4"]
                 }
               )
             }
@@ -255,6 +361,14 @@ export class GravadorasComponent {
       }
     },
     label: "Confirmar"
+  };
+  cancelarNomeTape: PoModalAction = {
+    action: () => {
+      this.nome_gravadora = '';
+      this.modalNomeTape.close();
+      this.altera = false;
+    },
+    label: "Cancelar"
   };
 
   cancelarGravadora: PoModalAction = {
