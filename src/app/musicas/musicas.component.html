@@ -23,8 +23,9 @@
                 <po-input class="po-md-2"name="faixa"       p-label="Faixa"          [(ngModel)]="faixa"    ></po-input>
                 <po-input class="po-md-2"name="lado"        p-label="Lado"          [(ngModel)]="lado"    ></po-input>
                 <po-input class="po-md-8"name="nomeMusica"  p-label="Nome da musica"          [(ngModel)]="nomeMusica"    ></po-input>
+                <po-input class="po-md-6"name="genero"        p-label="Genero"          [(ngModel)]="genero"    ></po-input>
+                <po-input class="po-md-6" name="numeroTape" p-label="Numero Tape"          [(ngModel)]="numeroTape"     ></po-input>
                 <po-input class="po-md-8" name="autor"      p-label="Autor"          [(ngModel)]="autor"     ></po-input>
-                <po-input class="po-md-4" name="numeroTape" p-label="Numero Tape"          [(ngModel)]="numeroTape"     ></po-input>
             </div>
         </form>
     </po-modal>
@@ -36,8 +37,9 @@
                 <po-input class="po-md-2" p-disabled="true" name="faixa"       p-label="Faixa"          [(ngModel)]="faixa"    ></po-input>
                 <po-input class="po-md-2" p-disabled="true" name="lado"        p-label="Lado"          [(ngModel)]="lado"    ></po-input>
                 <po-input class="po-md-8" p-disabled="true" name="nomeMusica"  p-label="Nome da musica"          [(ngModel)]="nomeMusica"    ></po-input>
+                <po-input class="po-md-6"name="genero"  p-disabled="true"      p-label="Genero"          [(ngModel)]="genero"    ></po-input>
+                <po-input class="po-md-6" p-disabled="true"  name="numeroTape" p-label="Numero Tape"          [(ngModel)]="numeroTape"     ></po-input>
                 <po-input class="po-md-8" p-disabled="true"  name="autor"      p-label="Autor"          [(ngModel)]="autor"     ></po-input>
-                <po-input class="po-md-4" p-disabled="true"  name="numeroTape" p-label="Numero Tape"          [(ngModel)]="numeroTape"     ></po-input>
             </div>
         </form>
     </po-modal>
@@ -50,6 +52,10 @@
                         <tr>
                             <td>Título:</td>
                             <td contenteditable="false">{{ this.titulo }}</td>
+                        </tr>
+                        <tr>
+                            <td>Numero do tape:</td>
+                            <td contenteditable="false">{{ this.numeroTape }}</td>
                         </tr>
                         <tr>
                             <td>Artista:</td>
@@ -66,6 +72,14 @@
                         <tr>
                             <td>Produtor Musical:</td>
                             <td contenteditable="false">{{ this.produtorMusical }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tipos de midia:</td>
+                            <td contenteditable="false">{{ this.midia }}</td>
+                        </tr>
+                        <tr>
+                            <td>Subiu para o streaming:</td>
+                            <td contenteditable="false">{{ this.subiu }}</td>
                         </tr>
                     </tbody>
                 </table>

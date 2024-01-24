@@ -15,6 +15,8 @@ export class ListaDeTapesService {
   urlbuscaTapesEtique = `${environment.API}buscaTapesEtique`;
   urlbuscaTapesTipo = `${environment.API}buscaTapesTipo`;
   urllistaTapesSteam = `${environment.API}listaTapesSteam`;
+  urllistaTapesTotal = `${environment.API}listaTapesTotal`;
+  urllistaconsultaEspecificaTapeTotal = `${environment.API}consultaEspecificaTape`;
   urlExcluirTape = `${environment.API}excluirTape`;
   urlBuscarTape = `${environment.API}buscarTape`;
   urlBuscarTapeExato = `${environment.API}buscarTapeExato`;
@@ -22,6 +24,7 @@ export class ListaDeTapesService {
   urlCarregarTape = `${environment.API}carregarTape`;
   urlCriarTape = `${environment.API}criarTape`;
   urlAlterarTape = `${environment.API}alterarTape`;
+  urlAlterarStreamTape = `${environment.API}alterarStreamTape`;
 
   headers = new HttpHeaders({ authorization: "Cod.ERP" });
 
@@ -36,6 +39,12 @@ export class ListaDeTapesService {
   listaTapesSteam(): Observable <any> {
     return this.http.get(
       this.urllistaTapesSteam,
+      { headers: this.headers }
+    );
+  }
+  listaTapesTotal(): Observable <any> {
+    return this.http.get(
+      this.urllistaTapesTotal,
       { headers: this.headers }
     );
   }
@@ -92,10 +101,24 @@ export class ListaDeTapesService {
       { headers: this.headers }
     );
   }
+  consultaDeTapes(filtroPrimario: string, filtroSecundario: string, conteudoDigitado: string): Observable <any> {
+    return this.http.get(
+      this.urllistaconsultaEspecificaTapeTotal+"?filtroP="+filtroPrimario+"&filtroS="+filtroSecundario+"&conteudo="+conteudoDigitado,
+      { headers: this.headers}
+    );
+
+  }
 
   alteraTape(tape: Object): Observable <any> {
     return this.http.put(
       this.urlAlterarTape,
+      tape,
+      { headers: this.headers }
+    );
+  }
+  stream(tape: Object): Observable <any> {
+    return this.http.put(
+      this.urlAlterarStreamTape,
       tape,
       { headers: this.headers }
     );

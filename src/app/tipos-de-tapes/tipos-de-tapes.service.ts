@@ -11,8 +11,10 @@ export class ListaDeTiposDeTapesService {
 
   urlAlteraTiposDeTapes = `${environment.API}alteraTiposDeTapes`;
   urlListaTiposDeTapes = `${environment.API}listaTiposDeTapes`;
+  urlListaDetail = `${environment.API}listaDetail`;
   urlExcluirTiposDeTapes = `${environment.API}excluirTiposDeTapes`;
   urlBuscarTiposDeTapes = `${environment.API}buscarTiposDeTapes`;
+  urlBuscarDetail = `${environment.API}buscarDetail`;
   urlCarregarTiposDeTapes = `${environment.API}carregarTiposDeTapes`;
   urlCriarTiposDeTapes = `${environment.API}criarTiposDeTapes`;
 
@@ -52,6 +54,18 @@ export class ListaDeTiposDeTapesService {
   carregarTiposDeTapes(id: Number): Observable <any> {
     return this.http.get(
       this.urlCarregarTiposDeTapes+"?id="+id,
+      { headers: this.headers }
+    );
+  }
+  listaDetail(id: Number): Observable <any> {
+    return this.http.get(
+      this.urlListaDetail+"?id="+id,
+      { headers: this.headers }
+    );
+  }
+  carregarDetail(id: Number): Observable <any> {
+    return this.http.get(
+      this.urlBuscarDetail+"?id="+id,
       { headers: this.headers }
     );
   }

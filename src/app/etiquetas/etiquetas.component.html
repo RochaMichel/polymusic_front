@@ -1,5 +1,6 @@
 <!-- <po-page-edit p-title="Orçamentos" class="p-m-0"> -->
 <po-page-default p-title="Sessão de etiquetas">
+
     <div class="po-row">
         <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar etiqueta" [(ngModel)]="Etiqueta"
             (p-change-model)="buscaEtiqueta()" p-icon="po-icon po-icon-search">
@@ -34,7 +35,7 @@
                 [(ngModel)]="nome_etiqueta"></po-input>
         </div>
     </form>
-    <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
+    <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true"  [p-sort]="true" [p-striped]="true"
         p-container="light" [p-columns]="colunasTape" [p-items]="listaTapes" p-container="shadow">
     </po-table>
 </po-modal>
@@ -47,6 +48,10 @@
                     <tr>
                         <td>Título:</td>
                         <td contenteditable="false">{{ this.titulo }}</td>
+                    </tr>
+                    <tr>
+                        <td>Numero do tape:</td>
+                        <td contenteditable="false">{{ this.novoNumero }}</td>
                     </tr>
                     <tr>
                         <td>Artista:</td>
@@ -63,6 +68,14 @@
                     <tr>
                         <td>Produtor Musical:</td>
                         <td contenteditable="false">{{ this.produtorMusical }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tipos de midia:</td>
+                        <td contenteditable="false">{{ this.midia }}</td>
+                    </tr>
+                    <tr>
+                        <td>Subiu para o streaming:</td>
+                        <td contenteditable="false">{{ this.subiu }}</td>
                     </tr>
                 </tbody>
             </table>

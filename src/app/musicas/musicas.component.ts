@@ -31,6 +31,8 @@ export class MusicaComponent {
     private router: Router
   ) { }
 
+  subiu: string = '';
+  midia: string = '';
   tapeId: string = '';
   titulo: string = '';
   artista: string = '';
@@ -41,6 +43,7 @@ export class MusicaComponent {
   faixa: string = '';
   lado: string = '';
   numeroTape: string = '';
+  genero: string = '';
   tipoExport: string = '';
   tipoCliente!: string;
   imprimeMusica: Array<any> = new Array();
@@ -75,12 +78,22 @@ export class MusicaComponent {
   ngOnInit(): void {
     this.carregaLista();
   }
-
+  public readonly auditOptions: Array<any> = [
+    { value: '1', label: 'Tape 1/4' },
+    { value: '2', label: 'Tape 1' },
+    { value: '3', label: 'Tape 1/2' },
+    { value: '4', label: 'Tape 2' },
+    { value: '5', label: 'DAT' },
+    { value: '6', label: 'Vinil' },
+    { value: '7', label: 'CD' },
+    { value: '8', label: 'DVD' },
+    { value: '9', label: 'Outros' },
+  ];
   public readonly colunas: Array<PoTableColumn> = [
-    { property: "id", label: "ID", width: "5%" },
     { property: "faixa", label: "Faixa", width: "5%" },
     { property: "lado", label: "Lado", width: "5%" },
     { property: "musica", label: "Musica", width: "30%" },
+    { property: "genero", label: "Genero", width: "30%" },
     { property: "autor", label: "Autor", width: "30%" },
     { property: "numeroTape", label: "Numero tape", width: "10%" },
     {
@@ -125,6 +138,7 @@ export class MusicaComponent {
     this.nomeMusica = '';
     this.autor = '';
     this.faixa = '';
+    this.genero = '';
     this.lado = '';
     this.numeroTape = '';
     this.modalMusica.open();
@@ -180,9 +194,22 @@ export class MusicaComponent {
         this.listaGravadorasService
           .buscarGravadora(resposta.gravadora)
           .subscribe((res) => { this.gravadoraName = res[0].nome_gravadora })
-        this.tapeId = resposta.id  
+        this.tapeId = resposta.id
         this.titulo = resposta.titulo
         this.produtorMusical = resposta.produtor_musical
+        this.numeroTape = resposta.numero_tape
+        const valoresSeparados = resposta.tipos_midia.split('/').filter(Boolean);
+        const dadosSelecionados = valoresSeparados.map((valor: any) => {
+          const opcaoEncontrada = this.auditOptions.find((opcao) => opcao.value === valor);
+          return opcaoEncontrada ? opcaoEncontrada : null;
+        });
+
+        this.titulo = resposta.titulo
+        if (resposta.stream) {
+          this.subiu = 'Sim';
+        } else {
+          this.subiu = 'Não';
+        }
         this.listaMusicasService.buscarMusicaExata(resposta.numero_tape).subscribe((res) => {
           for (let index = 0; index < res.length; index++) {
             this.imprimeMusica.push(
@@ -196,13 +223,17 @@ export class MusicaComponent {
               });
           }
           this.imprimeMusica;
+          for (let i = 1; i < dadosSelecionados.length; i++) {
+            this.midia += dadosSelecionados[i].label + ' - '
+          }
         });
+
         this.modalExibeTape.open();
       },
-      (err) =>{
+        (err) => {
           this.poNotification.error(err.error.retorno)
-      });
-    
+        });
+
 
   }
   Alterar(visuMusica: any) {
@@ -214,6 +245,7 @@ export class MusicaComponent {
         this.lado = resposta.lado
         this.numeroTape = resposta.numero_tape
         this.nomeMusica = resposta.musica
+        this.genero = resposta.genero
         this.autor = resposta.autor
         this.altera = true;
         this.modalMusica.open();
@@ -227,6 +259,7 @@ export class MusicaComponent {
       .subscribe((resposta) => {
         this.faixa = resposta.faixa
         this.lado = resposta.lado
+        this.genero = resposta.genero
         this.numeroTape = resposta.numero_tape
         this.nomeMusica = resposta.musica
         this.autor = resposta.autor
@@ -247,6 +280,7 @@ export class MusicaComponent {
                 faixa: resposta[index].faixa,
                 lado: resposta[index].lado,
                 musica: resposta[index].musica,
+                genero: resposta[index].genero,
                 autor: resposta[index].autor,
                 numeroTape: resposta[index].numero_tape,
                 acoes: ["1", "2", "3", "4"]
@@ -297,6 +331,7 @@ export class MusicaComponent {
           id: this.musicaId,
           musica: this.nomeMusica,
           autor: this.autor,
+          genero: this.genero,
           faixa: this.faixa,
           lado: this.lado,
           numero_tape: this.numeroTape,
@@ -329,6 +364,7 @@ export class MusicaComponent {
           musica: this.nomeMusica,
           autor: this.autor,
           faixa: this.faixa,
+          genero: this.genero,
           lado: this.lado,
           numero_tape: this.numeroTape,
         }
@@ -370,7 +406,7 @@ export class MusicaComponent {
     },
     label: "Cancelar"
   };
- 
+
   Exportacao() {
     this.modalExport.open();
   }

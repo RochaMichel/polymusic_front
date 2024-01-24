@@ -28,6 +28,8 @@ export class EtiquetasComponent {
   ) { }
   titulo: string = '';
   artista: string = '';
+  subiu: string = '';
+  midia: string = '';
   gravadoraName: string = '';
   etiquetaName: string = '';
   produtorMusical: string = '';
@@ -46,6 +48,7 @@ export class EtiquetasComponent {
   Etiqueta: any;
   etiquetaId!: number;
   altera: boolean = false;
+  Carregando: boolean = false;
   nome_etiqueta!: string;
   
   @ViewChild("modalEtiqueta", { static: true }) modalEtiqueta!: PoModalComponent;
@@ -57,6 +60,17 @@ export class EtiquetasComponent {
     // this.opcoesUsuarios();
     this.carregaLista();
   }
+  public readonly auditOptions: Array<any> = [
+    { value: '1', label: 'Tape 1/4' },
+    { value: '2', label: 'Tape 1' },
+    { value: '3', label: 'Tape 1/2' },
+    { value: '4', label: 'Tape 2' },
+    { value: '5', label: 'DAT' },
+    { value: '6', label: 'Vinil' },
+    { value: '7', label: 'CD' },
+    { value: '8', label: 'DVD' },
+    { value: '9', label: 'Outros' },
+  ];
   public readonly colunasTape: Array<PoTableColumn> = [
     { property: "id", label: "ID", width: "10%" },
     { property: "titulo", label: "Titulo", width: "45%" },
@@ -110,7 +124,7 @@ export class EtiquetasComponent {
         value: "1",
       });
     }
-    if (sessionStorage.getItem('lexclui_etiquetas') === 'true') {
+    if (sessionStorage.getItem('lexclui_etiquetas') === 'true') { 
       this.acoes.push({
         action: this.excluir.bind(this),
         icon: "po-icon po-icon-delete",
@@ -161,6 +175,7 @@ export class EtiquetasComponent {
 
   }
   Imprimir(etiqueta: any) {
+    this.Carregando = true;
     this.etiquetaId = etiqueta.id;
     this.listaEtiquetasService
       .carregarEtiqueta(etiqueta.id)
@@ -182,6 +197,7 @@ export class EtiquetasComponent {
               }
             }
           })
+          this.Carregando = false;
           this.modalNomeTape.open();
       },
       (err) =>{
@@ -204,6 +220,18 @@ export class EtiquetasComponent {
         this.novoNumero = resposta.numero_tape
         this.titulo = resposta.titulo
         this.produtorMusical = resposta.produtor_musical
+        const valoresSeparados = resposta.tipos_midia.split('/').filter(Boolean);
+        const dadosSelecionados = valoresSeparados.map((valor: any) => {
+          const opcaoEncontrada = this.auditOptions.find((opcao) => opcao.value === valor);
+          return opcaoEncontrada ? opcaoEncontrada : null;
+        });
+  
+        this.titulo = resposta.titulo
+        if(resposta.stream){
+          this.subiu = 'Sim';
+        }else{
+          this.subiu = 'Não';
+        }
         this.listaMusicaService.buscarMusicaExata(resposta.numero_tape).subscribe((res) => {
           for (let index = 0; index < res.length; index++) {
             this.listaMusicas.push(
@@ -216,10 +244,16 @@ export class EtiquetasComponent {
                 acoes: ["1"]
               });
           }
+          for( let i = 1; i < dadosSelecionados.length; i++){
+            this.midia += dadosSelecionados[i].label+' - '
+         }
         });
 
         this.modalExibeTape.open();
       })
+
+  }
+  loadMoreData(){
 
   }
   Alterar(etiqueta: any) {

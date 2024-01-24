@@ -23,6 +23,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MusicaComponent } from './musicas/musicas.component';
 import { ListaTapesComponent } from './lista-tapes/lista-tapes.component';
 import { GraficoComponent } from './grafico/grafico.component';
+import { AgregadoresComponent } from './agregadores/agregadores.component';
 const ROTAS: Routes = [
   {
     path: "usuarios",
@@ -44,8 +45,8 @@ const ROTAS: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: "editoras",
-    component: EditorasComponent,
+    path: "agregadores",
+    component: AgregadoresComponent,
     canActivate: [AuthGuard]
   },
   {
@@ -101,6 +102,7 @@ const ROTAS: Routes = [
     MusicaComponent,
     ListaTapesComponent,
     GraficoComponent,
+    AgregadoresComponent,
   ],
   imports: [
     BrowserModule,

@@ -27,14 +27,18 @@ export class TiposDeTapesComponent {
     private exportacao: Exportacao,
     private router: Router
   ) { }
-  
+
   titulo: string = '';
+  tipo: string = '';
+  subiu: string = '';
+  midia: string = '';
   artista: string = '';
   gravadoraName: string = '';
   etiquetaName: string = '';
   produtorMusical: string = '';
   novoNumero: string = '';
   listaMusicas: Array<any> = new Array();
+  listaDetail: Array<any> = new Array();
   listaTapes: Array<any> = new Array();
   acoesTape: Array<any> = new Array();
   tipoExport: string = '';
@@ -42,6 +46,7 @@ export class TiposDeTapesComponent {
   usuarios: Array<any> = new Array();
   Tipo_de_tapes: Array<any> = new Array();
   acoes: Array<any> = new Array();
+  acoesDetail: Array<any> = new Array();
   criar = sessionStorage.getItem('lcria_tipo_tapes');
   tipo_de_tapes: object | undefined;
   listaTiposDeTapes: Array<any> = new Array();
@@ -55,12 +60,24 @@ export class TiposDeTapesComponent {
   @ViewChild("modalTipoDeTapes", { static: true }) modalTipoDeTapes!: PoModalComponent;
   @ViewChild("modalTipoDeTapesView", { static: true }) modalTipoDeTapesView!: PoModalComponent;
   @ViewChild("modalNomeTape", { static: true }) modalNomeTape!: PoModalComponent;
+  @ViewChild("modalDetail", { static: true }) modalDetail!: PoModalComponent;
   @ViewChild('modalExport', { static: true }) modalExport!: PoModalComponent;
   @ViewChild('modalExibeTape', { static: true }) modalExibeTape!: PoModalComponent;
 
   ngOnInit(): void {
     this.carregaLista();
   }
+  public readonly auditOptions: Array<any> = [
+    { value: '1', label: 'Tape 1/4' },
+    { value: '2', label: 'Tape 1' },
+    { value: '3', label: 'Tape 1/2' },
+    { value: '4', label: 'Tape 2' },
+    { value: '5', label: 'DAT' },
+    { value: '6', label: 'Vinil' },
+    { value: '7', label: 'CD' },
+    { value: '8', label: 'DVD' },
+    { value: '9', label: 'Outros' },
+  ];
   public readonly colunasTape: Array<PoTableColumn> = [
     { property: "id", label: "ID", width: "10%" },
     { property: "titulo", label: "Titulo", width: "45%" },
@@ -82,12 +99,28 @@ export class TiposDeTapesComponent {
     });
     return this.acoesTape
   }
-
-
+  public readonly columns: Array<PoTableColumn> = [
+    { property: "tipo", label: "tipo", width: "10%" },
+    {
+      property: "acoes",
+      label: "Ações",
+      type: "icon",
+      width: "5%",
+      icons: this.iconsDetail(),
+    }
+  ];
+  iconsDetail(): Array<any> {
+    this.acoesDetail.push({
+      action: this.excluirDetail.bind(this),
+      icon: "po-icon po-icon-delete",
+      value: "1",
+      tooltip: "excluir",
+    });
+    return this.acoesDetail;
+  }
   public readonly colunas: Array<PoTableColumn> = [
     { property: "id", label: "ID", width: "10%" },
-    { property: "codigo", label: "Codigo", width: "10%" },
-    { property: "descricao", label: "Descrição", width: "80%" },
+    { property: "descricao", label: "Midia", width: "80%" },
     {
       property: "acoes",
       label: "Ações",
@@ -128,7 +161,16 @@ export class TiposDeTapesComponent {
     }
     return this.acoes;
   }
-
+  excluirDetail(detail: any) {
+    if (confirm("Deseja remover esse tipo?")) {
+      for (let index = 0; index < this.listaDetail.length; index++) {
+        if (detail.id === this.listaDetail[index].id) {
+          this.listaDetail.splice(index, 1);
+          break;
+        }
+      }
+    }
+  }
   criarTipoDeTapes() {
     this.descricao = '';
     this.codigo = '';
@@ -192,7 +234,7 @@ export class TiposDeTapesComponent {
               }
             }
           })
-          this.modalNomeTape.open();
+        this.modalNomeTape.open();
       });
   }
   async ImprimirTape(tape: any) {
@@ -211,6 +253,18 @@ export class TiposDeTapesComponent {
         this.novoNumero = resposta.numero_tape
         this.titulo = resposta.titulo
         this.produtorMusical = resposta.produtor_musical
+        const valoresSeparados = resposta.tipos_midia.split('/').filter(Boolean);
+        const dadosSelecionados = valoresSeparados.map((valor: any) => {
+          const opcaoEncontrada = this.auditOptions.find((opcao) => opcao.value === valor);
+          return opcaoEncontrada ? opcaoEncontrada : null;
+        });
+
+        this.titulo = resposta.titulo
+        if (resposta.stream) {
+          this.subiu = 'Sim';
+        } else {
+          this.subiu = 'Não';
+        }
         this.listaMusicaService.buscarMusicaExata(resposta.numero_tape).subscribe((res) => {
           for (let index = 0; index < res.length; index++) {
             this.listaMusicas.push(
@@ -223,31 +277,55 @@ export class TiposDeTapesComponent {
                 acoes: ["1"]
               });
           }
+          for (let i = 1; i < dadosSelecionados.length; i++) {
+            this.midia += dadosSelecionados[i].label + ' - '
+          }
         });
 
         this.modalExibeTape.open();
       })
 
   }
-  Alterar(tipo_de_tapes: any) {
+  async Alterar(tipo_de_tapes: any) {
+    this.listaDetail = [];
     this.tipos_de_tapesId = tipo_de_tapes.id;
     this.listaTiposDeTapesService
       .carregarTiposDeTapes(tipo_de_tapes.id)
-      .subscribe((resposta) => {
+      .subscribe(async (resposta) => {
         this.codigo = resposta.codigo
         this.descricao = resposta.descricao
         this.altera = true;
-        this.modalTipoDeTapes.open();
+        await this.listaTiposDeTapesService
+        .carregarDetail(resposta.id)
+        .subscribe(async (res) => {
+          for (let i = 0; i < res.length; i++) {
+            this.listaDetail.push({
+              tipo: res[i].tipo,
+              acoes: ['1']
+            });
+          }
+          this.modalTipoDeTapes.open();
+        })
       })
   }
-  visualizar(tipo_de_tapes: any) {
+  async visualizar(tipo_de_tapes: any) {
+    this.listaDetail = [];
     this.tipos_de_tapesId = tipo_de_tapes.id;
-    this.listaTiposDeTapesService
+    await this.listaTiposDeTapesService
       .carregarTiposDeTapes(tipo_de_tapes.id)
-      .subscribe((resposta) => {
+      .subscribe(async (resposta) => {
         this.codigo = resposta.codigo
         this.descricao = resposta.descricao
-        this.modalTipoDeTapesView.open();
+        await this.listaTiposDeTapesService
+          .carregarDetail(resposta.id)
+          .subscribe(async (res) => {
+            for (let i = 0; i < res.length; i++) {
+              this.listaDetail.push({
+                tipo: res[i].tipo
+              });
+            }
+            this.modalTipoDeTapesView.open();
+          })
       })
   }
 
@@ -261,9 +339,8 @@ export class TiposDeTapesComponent {
             this.Tipo_de_tapes.push(
               {
                 id: resposta[index].id,
-                codigo: resposta[index].codigo,
                 descricao: resposta[index].descricao,
-                acoes: ["1", "2", "3","4"]
+                acoes: ["1", "2", "3", "4"]
               }
             )
           }
@@ -283,9 +360,8 @@ export class TiposDeTapesComponent {
               this.Tipo_de_tapes.push(
                 {
                   id: resposta[index].id,
-                  codigo: resposta[index].codigo,
                   descricao: resposta[index].descricao,
-                  acoes: ["1", "2", "3","4"]
+                  acoes: ["1", "2", "3", "4"]
                 }
               )
             }
@@ -295,7 +371,9 @@ export class TiposDeTapesComponent {
     }
     this.carregaLista();
   }
-
+  IncluirDetail() {
+    this.modalDetail.open()
+  }
   confirmaTipoDeTapes: PoModalAction = {
     action: () => {
       if (this.altera) {
@@ -308,8 +386,12 @@ export class TiposDeTapesComponent {
           codigo: this.codigo,
           descricao: this.descricao,
         }
+        let tipo_midia = {
+          tipo_de_tapes: this.tipo_de_tapes,
+          detail: this.listaDetail
+        }
         this.listaTiposDeTapesService
-          .alteraTiposDeTapes(this.tipo_de_tapes)
+          .alteraTiposDeTapes(tipo_midia)
           .subscribe((res) => {
             this.poNotification.success(res.retorno);
             this.ListaLogService
@@ -335,9 +417,13 @@ export class TiposDeTapesComponent {
           codigo: this.codigo,
           descricao: this.descricao,
         }
-        if (this.codigo != '' && this.descricao != '') {
+        let tipo_midia = {
+          tipo_de_tapes: this.tipo_de_tapes,
+          detail: this.listaDetail
+        }
+        if (this.descricao != '') {
           this.listaTiposDeTapesService
-            .criarTiposDeTapes(this.tipo_de_tapes)
+            .criarTiposDeTapes(tipo_midia)
             .subscribe((res) => {
               this.poNotification.success(res.retorno);
               this.ListaLogService
@@ -364,6 +450,7 @@ export class TiposDeTapesComponent {
     action: () => {
       this.codigo = '';
       this.descricao = '';
+      this.listaDetail = [];
       this.modalTipoDeTapes.close();
       this.altera = false;
     },
@@ -382,5 +469,30 @@ export class TiposDeTapesComponent {
     },
     label: "Confirma"
   };
+  confirmaDetail: PoModalAction = {
+    action: () => {
+      this.listaDetail.push({
+        tipo: this.tipo,
+        acoes: ['1'],
+      });
+      if (confirm("Deseja Incluir outra Musica?")) {
+        this.tipo = '';
+      } else {
+        this.modalDetail.close();
+        this.tipo = '';
+      }
+
+    },
+    label: "Confirmar"
+  };
+  cancelarDetail: PoModalAction = {
+    action: () => {
+      this.modalDetail.close();
+      this.tipo = '';
+
+    },
+    label: "Cancelar"
+  };
+
 
 }

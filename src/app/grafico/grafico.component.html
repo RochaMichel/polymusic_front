@@ -1,17 +1,133 @@
+<div>
+    <po-loading-overlay [hidden]="isHideLoading"></po-loading-overlay>
+  </div>
 <po-page-default p-title="Dashboard">
     <div class="po-row">
-        <po-widget class="po-md-6" [p-height]="130">
-            <div style="color: green;" class="po-font-subtitle po-text-center po-pt-1"> No stream
+        <po-widget class="po-md-3" [p-height]="130">
+            <div style="color: green;" class="po-font-subtitle po-text-center po-pt-1"> On stream
+            </div>
+            <div class="po-font-title po-text-center po-pt-1">{{this.quantidadeS}}</div>
+        </po-widget>
+        <po-widget class="po-md-3" [p-height]="130">
+            <div style="color: blue;" class="po-font-subtitle po-text-center po-pt-1"> Off stream
+            </div>
+            <div class="po-font-title po-text-center po-pt-1">{{this.quantidadeO}}</div>
+        </po-widget>
+        <po-widget class="po-md-3" [p-height]="130">
+            <div style="color: red;" class="po-font-subtitle po-text-center po-pt-1"> Not stream
             </div>
             <div class="po-font-title po-text-center po-pt-1">{{this.quantidadeN}}</div>
         </po-widget>
-        <po-widget class="po-md-6" [p-height]="130">
-            <div style="color: blue;" class="po-font-subtitle po-text-center po-pt-1"> On stream
+        <po-widget class="po-md-3" [p-height]="130">
+            <div style="color: #fca503;" class="po-font-subtitle po-text-center po-pt-1"> Digitalizada
             </div>
-            <div class="po-font-title po-text-center po-pt-1">{{this.quantidadeS}}</div>
+            <div class="po-font-title po-text-center po-pt-1">{{this.quantidadeD}}</div>
         </po-widget>
         <po-chart class="po-md-12 po-mt-2" p-title="Tapes stream " [p-series]="valoresGrafico">
         </po-chart>
         <h4>Quantidade total de tapes {{ this.quantidadeTotal }}</h4>
     </div>
+    <po-divider p-label="consulta"></po-divider>
+    <div class="po-row">
+        <po-radio-group class="po-md-12" name="selecione" [(ngModel)]="filtro" p-label="Selecione o filtro primario"
+            [p-options]="columnOptions">
+        </po-radio-group>
+        <po-combo p-icon="po-icon po-icon-align-justify" class="po-md-6" name="pesquisa"
+            p-label="Selecione o campo de Pesquisa" [ngModel]="listaFiltro" (ngModelChange)="listaFiltro = $event"
+            [p-options]="opcoesFiltro"> </po-combo>
+        <po-input class="po-md-6" name="conteudoDigitado" [(ngModel)]="conteudoDigitado"
+            p-label="Escreva a palavra para pesquisar"></po-input>
+        <po-button class="po-m-5" p-icon="po-icon po-icon-search" p-label="Pesquisar" (p-click)="Pesquisar()"
+            p-type="primary">
+        </po-button>
+    </div>
+    <po-widget *ngIf="resultado" p-title="Resultado da consulta">
+        <po-button *ngIf="subirTape" class="po-m-5" p-icon="po-icon po-icon-plus-circle" p-label="Subir para o Stream" (p-click)="SubirStream()"
+            p-type="primary">
+        </po-button>
+        <po-table [p-hide-columns-manager]="true"  [p-selectable]="true"
+        [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
+            p-container="light" [p-columns]="colunas" [p-items]="listaTapesN" p-container="shadow">
+        </po-table>
+    </po-widget>
+        
+    <!-- <div class="po-md-6 po-mt-2">
+        <po-widget p-title="On stream">
+            <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
+                p-container="light" [p-columns]="colunas" [p-items]="listaTapesS" p-container="shadow">
+            </po-table>
+        </po-widget>
+    </div>
+    <div class="po-md-6 po-mt-2">
+        <po-widget p-title="No stream">
+            <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
+                p-container="light" [p-columns]="colunas" [p-items]="listaTapesN" p-container="shadow">
+            </po-table>
+        </po-widget>
+    </div>-->
 </po-page-default>
+
+<po-modal #modalExibeTape p-size="xl" p-click-out="false" [p-hide-close]="true" p-title="Tape">
+    <div class="wrapper">
+        <h1>PolyMusic</h1>
+        <div class="table-container">
+            <table class="header">
+                <tbody>
+                    <tr>
+                        <td>Título:</td>
+                        <td contenteditable="false">{{ this.titulo }}</td>
+                    </tr>
+                    <tr>
+                        <td>Numero do tape:</td>
+                        <td contenteditable="false">{{ this.novoNumero }}</td>
+                    </tr>
+                    <tr>
+                        <td>Artista:</td>
+                        <td contenteditable="false">{{ this.artista }}</td>
+                    </tr>
+                    <tr>
+                        <td>Gravadora:</td>
+                        <td contenteditable="false">{{ this.gravadoraName }}</td>
+                    </tr>
+                    <tr>
+                        <td>Etiqueta:</td>
+                        <td contenteditable="false">{{ this.etiquetaName }}</td>
+                    </tr>
+                    <tr>
+                        <td>Produtor Musical:</td>
+                        <td contenteditable="false">{{ this.produtorMusical }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tipos de midia:</td>
+                        <td contenteditable="false">{{ this.midia }}</td>
+                    </tr>
+                    <tr>
+                        <td>Subiu para o streaming:</td>
+                        <td contenteditable="false">{{ this.subiu }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Faixa</th>
+                        <th>Lado</th>
+                        <th>Música</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Lista de Músicas -->
+                <tbody>
+                    <tr *ngFor="let musica of listaMusicas">
+                        <td contenteditable="false">{{ musica.faixa }}</td>
+                        <td contenteditable="false">{{ musica.lado }}</td>
+                        <td contenteditable="false">
+                            {{ musica.musica }} <br> ({{ musica.autor }})
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</po-modal>

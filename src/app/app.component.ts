@@ -60,16 +60,19 @@ export class AppComponent {
     }
     if (sessionStorage.getItem('lvisualiza_tapes')=== 'true') {
       this.array_itens.push(
-        { label: 'Tapes', link: '/tapes' },
+        { label: 'Produtos', link: '/tapes' },
       );
     }
     if (sessionStorage.getItem('lvisualiza_tipo_tapes')=== 'true') {
       this.array_itens.push(
-        { label: 'Tipos de tapes', link: '/tipos-de-tapes' },
+        { label: 'Tipos de Midia', link: '/tipos-de-tapes' },
       );
     }
     this.array_itens.push(
       { label: 'Dashboard', link: '/grafico' },
+    );
+    this.array_itens.push(
+      { label: 'Agregadores', link: '/agregadores' },
     );
     return this.array_itens;
   }

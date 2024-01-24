@@ -1,0 +1,125 @@
+<!-- <po-page-edit p-title="Orçamentos" class="p-m-0"> -->
+    <po-page-default p-title="Sessão de agregadores">
+
+        <div class="po-row">
+            <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar agregadores" [(ngModel)]="Agregadores"
+                (p-change-model)="buscaAgregadores()" p-icon="po-icon po-icon-search">
+            </po-input>
+    
+            <po-button class="po-m-5" style="margin-left: auto" p-label="Exportar" (p-click)="Exportacao()"></po-button>
+            <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir agregador" (p-click)="criarAgregadores()"
+                p-type="primary">
+            </po-button>
+        </div>
+        <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true" [p-striped]="true"
+            p-container="light" [p-columns]="colunas" [p-items]="listarAgregadores" p-container="shadow">
+        </po-table>
+    </po-page-default>
+    
+    <po-modal #modalAgregadores [p-primary-action]="confirmaAgregadores" [p-secondary-action]="cancelarAgregadores"
+        p-click-out="false" [p-hide-close]="true" p-title="Agregadores">
+        <form #ProdutoForm="ngForm">
+            <po-divider p-label="Dados gerais"></po-divider>
+            <div class="po-row">
+                <po-input class="po-md-12" name="agregador" p-label="Agregador"
+                    [(ngModel)]="nomeAgregador"></po-input>
+            </div>
+        </form>
+    </po-modal>
+    <po-modal #modalNomeTape p-size="xl" p-click-out="false" [p-hide-close]="true"
+        p-title="Agregadores">
+        <form #ProdutoForm="ngForm">
+            <po-divider p-label="Dados gerais"></po-divider>
+            <div class="po-row">
+                <po-input class="po-md-12" name="agregador" p-label="Agregador" p-disabled="true"
+                    [(ngModel)]="nomeAgregador"></po-input>
+            </div>
+        </form>
+        <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true"  [p-sort]="true" [p-striped]="true"
+            p-container="light" [p-columns]="colunasTape" [p-items]="listaTapes" p-container="shadow">
+        </po-table>
+    </po-modal>
+    <po-modal #modalExibeTape p-size="xl" p-click-out="false" [p-hide-close]="true" p-title="Tape">
+        <div class="wrapper">
+            <h1>PolyMusic</h1>
+            <div class="table-container">
+                <table class="header">
+                    <tbody>
+                        <tr>
+                            <td>Título:</td>
+                            <td contenteditable="false">{{ this.titulo }}</td>
+                        </tr>
+                        <tr>
+                            <td>Numero do tape:</td>
+                            <td contenteditable="false">{{ this.novoNumero }}</td>
+                        </tr>
+                        <tr>
+                            <td>Artista:</td>
+                            <td contenteditable="false">{{ this.artista }}</td>
+                        </tr>
+                        <tr>
+                            <td>Gravadora:</td>
+                            <td contenteditable="false">{{ this.gravadoraName }}</td>
+                        </tr>
+                        <tr>
+                            <td>Etiqueta:</td>
+                            <td contenteditable="false">{{ this.etiquetaName }}</td>
+                        </tr>
+                        <tr>
+                            <td>Produtor Musical:</td>
+                            <td contenteditable="false">{{ this.produtorMusical }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tipos de midia:</td>
+                            <td contenteditable="false">{{ this.midia }}</td>
+                        </tr>
+                        <tr>
+                            <td>Subiu para o streaming:</td>
+                            <td contenteditable="false">{{ this.subiu }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Faixa</th>
+                            <th>Lado</th>
+                            <th>Música</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Lista de Músicas -->
+                    <tbody>
+                        <tr *ngFor="let musica of listaMusicas">
+                            <td contenteditable="false">{{ musica.faixa }}</td>
+                            <td contenteditable="false">{{ musica.lado }}</td>
+                            <td contenteditable="false">
+                                {{ musica.musica }} <br> ({{ musica.autor }})
+                            </td>
+    
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </po-modal>
+    
+    <po-modal #modalAgregadoresView p-click-out="false" [p-hide-close]="true" p-title="Agregadores">
+        <form #ProdutoForm="ngForm">
+            <po-divider p-label="Dados gerais"></po-divider>
+            <div class="po-row">
+                <po-input class="po-md-12" name="nomeAgregadores" p-label="Agregador" p-disabled="true"
+                    [(ngModel)]="nomeAgregador"></po-input>
+            </div>
+        </form>
+    </po-modal>
+    
+    <po-modal #modalExport [p-primary-action]="confirmaExportacao" p-click-out="false" [p-hide-close]="false"
+        p-title="Exportar consulta">
+        <po-select name="select" p-label="Selecione o formato:" [p-options]="[
+        { label: 'CSV (Separado por ponto e vírgula;)', value: 'csv' },
+        { label: 'PDF', value: 'pdf' }
+      ]" [ngModel]="tipoExport" (ngModelChange)="tipoExport = $event">
+        </po-select>
+    </po-modal>
+    <!-- </po-page-edit> -->

@@ -31,6 +31,8 @@ export class GravadorasComponent {
   
   titulo: string = '';
   artista: string = '';
+  midia: string = '';
+  subiu: string = '';
   gravadoraName: string = '';
   etiquetaName: string = '';
   produtorMusical: string = '';
@@ -74,6 +76,17 @@ export class GravadorasComponent {
   ngOnInit(): void {
     this.carregaLista();
   }
+  public readonly auditOptions: Array<any> = [
+    { value: '1', label: 'Tape 1/4' },
+    { value: '2', label: 'Tape 1' },
+    { value: '3', label: 'Tape 1/2' },
+    { value: '4', label: 'Tape 2' },
+    { value: '5', label: 'DAT' },
+    { value: '6', label: 'Vinil' },
+    { value: '7', label: 'CD' },
+    { value: '8', label: 'DVD' },
+    { value: '9', label: 'Outros' },
+  ];
 
   public readonly colunasTape: Array<PoTableColumn> = [
     { property: "id", label: "ID", width: "10%" },
@@ -179,6 +192,8 @@ export class GravadorasComponent {
 
   }
   Imprimir(gravadora: any) {
+    this.listaMusicas = [];
+    this.listaTapes = [];
     this.listaGravadorasService
       .carregarGravadora(gravadora.id)
       .subscribe((resposta) => {
@@ -218,6 +233,18 @@ export class GravadorasComponent {
         this.novoNumero = resposta.numero_tape
         this.titulo = resposta.titulo
         this.produtorMusical = resposta.produtor_musical
+        const valoresSeparados = resposta.tipos_midia.split('/').filter(Boolean);
+        const dadosSelecionados = valoresSeparados.map((valor: any) => {
+          const opcaoEncontrada = this.auditOptions.find((opcao) => opcao.value === valor);
+          return opcaoEncontrada ? opcaoEncontrada : null;
+        });
+  
+        this.titulo = resposta.titulo
+        if(resposta.stream){
+          this.subiu = 'Sim';
+        }else{
+          this.subiu = 'Não';
+        }
         this.listaMusicaService.buscarMusicaExata(resposta.numero_tape).subscribe((res) => {
           for (let index = 0; index < res.length; index++) {
             this.listaMusicas.push(
@@ -230,6 +257,9 @@ export class GravadorasComponent {
                 acoes: ["1"]
               });
           }
+          for( let i = 1; i < dadosSelecionados.length; i++){
+            this.midia += dadosSelecionados[i].label+' - '
+         }
         });
 
         this.modalExibeTape.open();

@@ -1,11 +1,15 @@
 <!-- <po-page-edit p-title="Orçamentos" class="p-m-0"> -->
-<po-page-default p-title="Sessão de tapes">
+    <div>
+        <po-loading-overlay [hidden]="isHideLoading"></po-loading-overlay>
+      </div>
+    <po-page-default p-title="Sessão de Produtos">
     <div class="po-row">
-        <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar tape" [(ngModel)]="Tape"
+        <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar produto" [(ngModel)]="Tape"
             (p-change-model)="buscaTape()" p-icon="po-icon po-icon-search">
         </po-input>
+        <po-widget class="po-m-5" style="margin-left: auto">Itens: {{this.quantidadeTape}}</po-widget>
         <po-button class="po-m-5" style="margin-left: auto" p-label="Exportar" (p-click)="Exportacao()"></po-button>
-        <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir tape" (p-click)="criarTape()"
+        <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir produto" (p-click)="criarTape()"
             p-type="primary">
         </po-button>
     </div>
@@ -14,7 +18,7 @@
     </po-table>
 </po-page-default>
 
-<po-modal #modalTape [p-primary-action]="confirmaTape" [p-secondary-action]="cancelarTape" p-size="xl"
+<po-modal #modalTape [p-primary-action]="confirmaTape" [p-secondary-action]="cancelarTape" p-size="auto"
     [p-hide-close]="true" p-title="Tape">
     <form #optionsForm="ngForm">
         <div class="po-row">
@@ -38,31 +42,50 @@
                 (ngModelChange)="etiqueta = $event" [p-options]="Etiqueta"> </po-combo>
             <po-combo class="po-md-12" name="gravadora" p-label="Gravadora" [ngModel]="gravadora"
                 (ngModelChange)="gravadora = $event" [p-options]="Gravadora"> </po-combo>
-            <po-input class="po-md-6" name="novoNumero" [(ngModel)]="novoNumero" p-label="Numero Tape"></po-input>
+            <po-input class="po-md-6" name="novoNumero" [(ngModel)]="novoNumero" p-label="Numero Tape"></po-input> 
             <po-input class="po-md-6" name="produtorMusical" [(ngModel)]="produtorMusical"
                 p-label="Produtor musical"></po-input>
-            <po-checkbox-group class="po-lg-9" name="tiposMidia" [ngModel]="tiposMidia"
-            (ngModelChange)="tiposMidia = $event" p-label="Tipos midia" [p-options]="auditOptions">
+                <po-table class="po-md-12"
+                [p-hide-batch-actions]="false"
+                [p-hide-table-search]="false"
+                [p-hide-text-overflow]="true"
+                [p-selectable]="true"
+                [p-sort]="true"
+                [p-striped]="true"
+                [p-columns]="columnsTipoMidia"
+                [p-items]="opcoesMidia"
+                (p-collapsed)="onCollapseDetail()"
+                (p-expanded)="onExpandDetail()"
+                (p-selected)="sumTotal($event)"
+                (p-unselected)="decreaseTotal($event)"
+                (p-change-visible-columns)="changeColumnVisible($event)"              >
+              </po-table>
+            <po-switch class="po-md-4" name="stream" p-label="On stream" [(ngModel)]="stream"> </po-switch>
+            <po-switch class="po-md-4" name="notstream" p-label="Not stream" [(ngModel)]="notStream"> </po-switch>
+            <po-switch class="po-md-4" name="midia" p-label="Midia digitalizada" [(ngModel)]="midiaDigital"> </po-switch>
+            <po-checkbox-group *ngIf="stream" class="po-lg-12" name="agregadoresss" p-label="Selecione o(s) agregador(es)" [p-options]="agregadorOptions"
+            [ngModel]="agregadoresMarcados" (ngModelChange)="agregadoresMarcados = $event">
             </po-checkbox-group>
-            <po-switch class="po-md-4" name="stream" p-label="Subiu para stream" [(ngModel)]="stream"> </po-switch>
-            <po-button class="po-m-4"  p-label="Incluir Musica" (p-click)="IncluirMusica()"></po-button>
+            <po-button class="po-m-6"  p-label="Incluir Musica" (p-click)="IncluirMusica()"></po-button>
         </div>
         <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true"
         [p-striped]="true" p-container="light" [p-columns]="columns" [p-items]="listaMusicas" p-container="shadow"></po-table>
+  
           <!--<po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true"
           [p-striped]="true" p-container="light" [p-columns]="columns" [p-items]="listaMusicas" p-container="shadow"> 
     </po-table>-->
     </form>
 </po-modal>
-<po-modal #modalMusica [p-primary-action]="confirmaMusica" [p-secondary-action]="cancelarMusica" p-click-out="false"
+<po-modal #modalMusica [p-primary-action]="confirmaMusica" [p-secondary-action]="cancelarMusica"  p-click-out="false"
         [p-hide-close]="true" p-title="Musica">
         <form #ProdutoForm="ngForm">
             <po-divider p-label="Dados gerais"></po-divider>
             <div class="po-row">
-                <po-input class="po-md-2" name="categoria" p-label="Faixa"   [(ngModel)]="faixa"  ></po-input>
-                <po-input class="po-md-2" name="categoria" p-label="Lado"   [(ngModel)]="lado"  ></po-input>     
+                <po-input class="po-md-2" name="faixa" p-label="Faixa"   [(ngModel)]="faixa"  ></po-input>
+                <po-input class="po-md-2" name="lado" p-label="Lado"   [(ngModel)]="lado"  ></po-input>     
                 <po-input class="po-md-8"name="nomeMusica" p-label="Nome da musica" [(ngModel)]="nome_musica"    ></po-input>
-                <po-input class="po-md-12" name="album" p-label="Autor"          [(ngModel)]="autor"     ></po-input>
+                <po-input class="po-md-6"name="genero" p-label="Genero" [(ngModel)]="genero"    ></po-input>
+                <po-input class="po-md-6" name="autor" p-label="Autor"          [(ngModel)]="autor"     ></po-input>
             </div>
         </form>
     </po-modal>
@@ -80,6 +103,10 @@
                         <td contenteditable="false">{{ this.titulo }}</td>
                     </tr>
                     <tr>
+                        <td>Numero do tape:</td>
+                        <td contenteditable="false">{{ this.novoNumero }}</td>
+                    </tr>
+                    <tr>
                         <td>Artista:</td>
                         <td contenteditable="false">{{ this.artista }}</td>
                     </tr>
@@ -94,6 +121,14 @@
                     <tr>
                         <td>Produtor Musical:</td>
                         <td contenteditable="false">{{ this.produtorMusical }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tipos de midia:</td>
+                        <td contenteditable="false">{{ this.midia }}</td>
+                    </tr>
+                    <tr>
+                        <td>Subiu para o streaming:</td>
+                        <td contenteditable="false">{{ this.subiu }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -137,6 +172,13 @@
             p-label="Numero Tape"></po-input>
         <po-combo class="po-md-6" name="tipo_tape" p-label="Tipo de tape" [p-disabled]="true" [ngModel]="tipo_tape"
             (ngModelChange)="tipo_tape = $event" [p-options]="Tipo_tape"></po-combo>
+            <po-switch class="po-md-4" [p-disabled]="true" name="stream" p-label="On stream" [(ngModel)]="stream"> </po-switch>
+            <po-switch class="po-md-4" [p-disabled]="true" name="notstream" p-label="Not stream" [(ngModel)]="notStream"> </po-switch>
+            <po-switch class="po-md-4" [p-disabled]="true" name="midia" p-label="Midia digitalizada" [(ngModel)]="midiaDigital"> </po-switch>
+            <po-checkbox-group *ngIf="stream" [p-disabled]="true" class="po-lg-12" name="agregadoresss" p-label="Selecione o(s) agregador(es)" [p-options]="agregadorOptions"
+            [ngModel]="agregadoresMarcados" (ngModelChange)="agregadoresMarcados = $event">
+            </po-checkbox-group>
+
             <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true"
             [p-striped]="true" p-container="light" [p-columns]="columns" [p-items]="listaMusicas" p-container="shadow"></po-table>
     </div>

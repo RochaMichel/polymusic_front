@@ -1,66 +1,64 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { PoModalAction, PoModalComponent, PoNotificationService, PoTableColumn } from '@po-ui/ng-components';
-import { ListaDeNomesService } from './nomes.service';
+import { ListaDeAgregadoresService } from '../agregadores/agregadores.service';
 import { Exportacao } from '../exportacao/exportacao.service';
 import { ListaDeLogService } from '../log/log.service';
 import { ListaDeTapesService } from '../tapes/tapes.service';
-import { ListaDeGravadorasService } from '../gravadoras/gravadoras.service';
-import { ListaDeEtiquetasService } from '../etiquetas/etiquetas.service';
+import { ListaDeNomesService } from '../nomes/nomes.service';
 import { ListaDeMusicaService } from '../musicas/musicas.service';
-import { ListaDeTiposDeTapesService } from '../tipos-de-tapes/tipos-de-tapes.service';
+import { ListaDeGravadorasService } from '../gravadoras/gravadoras.service';
 
 @Component({
-  selector: 'app-nomes',
-  templateUrl: './nomes.component.html',
-  styleUrls: ['./nomes.component.css']
+  selector: 'app-agregadores',
+  templateUrl: './agregadores.component.html',
+  styleUrls: ['./agregadores.component.css']
 })
-export class NomesComponent {
-  novoNumero: any;
-
+export class AgregadoresComponent {
   constructor(
     private poNotification: PoNotificationService,
     private listaNomesService: ListaDeNomesService,
     private listaTapesService: ListaDeTapesService,
-    private listaGravadorasService: ListaDeGravadorasService,
-    private listaEtiquetasService: ListaDeEtiquetasService,
     private listaMusicaService: ListaDeMusicaService,
+    private listaGravadorasService: ListaDeGravadorasService,
+    private listaAgregadoresService: ListaDeAgregadoresService,
     private ListaLogService: ListaDeLogService,
     private exportacao: Exportacao,
     private router: Router
   ) { }
-
   titulo: string = '';
+  artista: string = '';
   subiu: string = '';
   midia: string = '';
-  artista: string = '';
   gravadoraName: string = '';
   etiquetaName: string = '';
   produtorMusical: string = '';
+  novoNumero: string = '';
   listaMusicas: Array<any> = new Array();
+  listaTapes: Array<any> = new Array();
+  acoesTape: Array<any> = new Array();
   tipoExport: string = '';
   tipoCliente!: string;
   usuarios: Array<any> = new Array();
+  Agregadoress: Array<any> = new Array();
   acoes: Array<any> = new Array();
-  acoesTape: Array<any> = new Array();
-  Nomes: Array<any> = new Array();
-  criar = sessionStorage.getItem('lcria_nomes');
-  nomesObj: object | undefined;
-  listaNomes: Array<any> = new Array();
-  Nome: string = '';
-  nomesId!: number;
+  criar = sessionStorage.getItem('lcria_etiquetas');
+  agregador: object | undefined;
+  listarAgregadores: Array<any> = new Array();
+  Agregadores: any;
+  agregadorId!: number;
   altera: boolean = false;
-  nome!: string;
-  funcao!: string;
-  listaTapes: Array<any> = new Array();
-
-  @ViewChild("modalNomes", { static: true }) modalNomes!: PoModalComponent;
-  @ViewChild("modalNomesView", { static: true }) modalNomesView!: PoModalComponent;
+  Carregando: boolean = false;
+  nomeAgregador!: string;
+  
+  @ViewChild("modalAgregadores", { static: true }) modalAgregadores!: PoModalComponent;
+  @ViewChild("modalAgregadoresView", { static: true }) modalAgregadoresView!: PoModalComponent;
   @ViewChild("modalNomeTape", { static: true }) modalNomeTape!: PoModalComponent;
   @ViewChild('modalExport', { static: true }) modalExport!: PoModalComponent;
   @ViewChild('modalExibeTape', { static: true }) modalExibeTape!: PoModalComponent;
   ngOnInit(): void {
-    this.carregarLista();
+    // this.opcoesUsuarios();
+    this.carregaLista();
   }
   public readonly auditOptions: Array<any> = [
     { value: '1', label: 'Tape 1/4' },
@@ -94,10 +92,10 @@ export class NomesComponent {
     });
     return this.acoesTape
   }
+
   public readonly colunas: Array<PoTableColumn> = [
     { property: "id", label: "ID", width: "10%" },
-    { property: "funcao", label: "Função", width: "10%" },
-    { property: "nome", label: "Nome", width: "80%" },
+    { property: "nomeAgregador", label: "Agregador", width: "80%" },
     {
       property: "acoes",
       label: "Ações",
@@ -119,14 +117,14 @@ export class NomesComponent {
       icon: "po-icon po-icon-eye",
       value: "2",
     });
-    if (sessionStorage.getItem('laltera_nomes') === 'true') {
+    if (sessionStorage.getItem('laltera_etiquetas') === 'true') {
       this.acoes.push({
         action: this.Alterar.bind(this),
         icon: "po-icon po-icon-edit",
         value: "1",
       });
     }
-    if (sessionStorage.getItem('lexclui_nomes') === 'true') {
+    if (sessionStorage.getItem('lexclui_etiquetas') === 'true') { 
       this.acoes.push({
         action: this.excluir.bind(this),
         icon: "po-icon po-icon-delete",
@@ -135,27 +133,27 @@ export class NomesComponent {
     }
     return this.acoes;
   }
-
-  criarNomes() {
-    this.nome = '';
-    this.modalNomes.open();
+  criarAgregadores() {
+    this.nomeAgregador = '';
+    this.modalAgregadores.open();
   }
 
-  excluir(nomes: any) {
-    if (confirm("Deseja excluir o nomes?")) {
+  excluir(agregador: any) {
+    if (confirm("Deseja excluir a agregador?")) {
       let Log = {
-        descricao_log: 'Nome com ID: ' + nomes.id + ' excluido pelo usuario: ' + sessionStorage.getItem('usuario') + ', com ID: ' + sessionStorage.getItem('id'),
+        descricao_log: 'Agregadores com ID: ' + agregador.id + ' excluida pelo usuario: ' + sessionStorage.getItem('usuario') + ', com ID: ' + sessionStorage.getItem('id'),
         data_log: this.getDataEHoraAtual(),
       }
-      this.listaNomesService
-        .excluirNomes(nomes.id)
+      this.listaAgregadoresService
+        .excluirAgregadores(agregador.id)
         .subscribe((res) => {
           this.ListaLogService
             .criarLog(Log)
             .subscribe((res) => {
               this.ngOnInit();
-            })
+            });
           this.poNotification.success(res.retorno);
+
         },
           (err) => {
             console.log(err);
@@ -168,7 +166,7 @@ export class NomesComponent {
   getDataEHoraAtual(): string {
     const dataEHora = new Date();
     const dia = String(dataEHora.getDate()).padStart(2, '0');
-    const mes = String(dataEHora.getMonth() + 1).padStart(2, '0');
+    const mes = String(dataEHora.getMonth() + 1).padStart(2, '0'); // O mês é contado a partir do zero
     const ano = dataEHora.getFullYear();
     const hora = String(dataEHora.getHours()).padStart(2, '0');
     const minutos = String(dataEHora.getMinutes()).padStart(2, '0');
@@ -176,13 +174,15 @@ export class NomesComponent {
     return `${dia}/${mes}/${ano} ${hora}:${minutos}:${segundos}`;
 
   }
-  Imprimir(nomes: any) {
-    this.nomesId = nomes.id;
-    this.listaNomesService
-      .carregarNomes(nomes.id)
+  Imprimir(agregador: any) {
+    this.Carregando = true;
+    this.agregadorId = agregador.id;
+    this.listaAgregadoresService
+      .carregarAgregadores(agregador.id)
       .subscribe((resposta) => {
+        this.nomeAgregador = resposta.nomeAgregador
         this.listaTapesService
-          .buscarTapeNome(nomes.id)
+          .buscarTapeEtique(agregador.id)
           .subscribe((resposta) => {
             for (let index = 0; index < resposta.length; index++) {
               if (resposta[index].bloqueado === 'N') {
@@ -197,9 +197,11 @@ export class NomesComponent {
               }
             }
           })
-        this.nome = resposta.nome
-        this.funcao = resposta.funcao
-        this.modalNomeTape.open();
+          this.Carregando = false;
+          this.modalNomeTape.open();
+      },
+      (err) =>{
+          this.poNotification.error(err.error.retorno)
       });
   }
   async ImprimirTape(tape: any) {
@@ -209,9 +211,9 @@ export class NomesComponent {
         this.listaNomesService
           .buscarNomesExato(resposta.artista)
           .subscribe((res) => { this.artista = res[0].nome })
-        this.listaEtiquetasService
-          .buscarEtiqueta(resposta.etiqueta)
-          .subscribe((res) => { this.etiquetaName = res[0].nome_etiqueta })
+        this.listaAgregadoresService
+          .buscarAgregadores(resposta.agregador)
+          .subscribe((res) => { this.etiquetaName = res[0].nomeAgregador })
         this.listaGravadorasService
           .buscarGravadora(resposta.gravadora)
           .subscribe((res) => { this.gravadoraName = res[0].nome_gravadora })
@@ -251,153 +253,151 @@ export class NomesComponent {
       })
 
   }
-  Alterar(nomes: any) {
-    this.nomesId = nomes.id;
-    this.listaNomesService
-      .carregarNomes(nomes.id)
+  loadMoreData(){
+
+  }
+  Alterar(agregador: any) {
+    this.agregadorId = agregador.id;
+    this.listaAgregadoresService
+      .carregarAgregadores(agregador.id)
       .subscribe((resposta) => {
-        this.nome = resposta.nome
-        this.funcao = resposta.funcao
+        this.nomeAgregador = resposta.nomeAgregadores
         this.altera = true;
-        this.modalNomes.open();
+        this.modalAgregadores.open();
       })
   }
-  visualizar(nomes: any) {
-    this.nomesId = nomes.id;
-    this.listaNomesService
-      .carregarNomes(nomes.id)
+  visualizar(agregador: any) {
+    this.agregadorId = agregador.id;
+    this.listaAgregadoresService
+      .carregarAgregadores(agregador.id)
       .subscribe((resposta) => {
-        this.nome = resposta.nome
-        this.funcao = resposta.funcao
-        this.modalNomesView.open();
+        this.nomeAgregador = resposta.nomeAgregadores
+        this.modalAgregadoresView.open();
       })
   }
 
-  async carregarLista() {
-    this.Nomes = [];
-    await this.listaNomesService
-      .listaNomes()
+  async carregaLista() {
+    this.Agregadoress = [];
+    await this.listaAgregadoresService
+      .listaAgregadores()
       .subscribe((resposta) => {
         for (let index = 0; index < resposta.length; index++) {
           if (resposta[index].bloqueado === 'N') {
-            this.Nomes.push(
+            this.Agregadoress.push(
               {
                 id: resposta[index].id,
-                nome: resposta[index].nome,
-                funcao: resposta[index].funcao,
-                acoes: ["1", "2", "3", "4"]
+                nomeAgregador: resposta[index].nomeAgregadores,
+                acoes: ["1", "2", "3","4"]
               }
             )
           }
         }
-        this.listaNomes = this.Nomes;
+        this.listarAgregadores = this.Agregadoress;
       })
   }
 
-  buscarNomes(): void {
-    if (this.Nome) {
-      this.listaNomesService
-        .buscarNomes(this.Nome)
+  buscaAgregadores(): void {
+    if (this.Agregadores) {
+      this.listaAgregadoresService
+        .buscarAgregadores(this.Agregadores)
         .subscribe((resposta) => {
-          this.Nomes = [];
+          this.Agregadoress = [];
           for (let index = 0; index < resposta.length; index++) {
             if (resposta[index].bloqueado === 'N') {
-              this.Nomes.push(
-                {
-                  id: resposta[index].id,
-                  nome: resposta[index].nome,
-                  funcao: resposta[index].funcao,
-                  acoes: ["1", "2", "3", "4"]
-                }
-              )
-            }
+            this.Agregadoress.push(
+              {
+                id: resposta[index].id,
+                nomeAgregador: resposta[index].nomeAgregadores,
+                acoes: ["1", "2", "3","4"]
+              }
+            )
           }
-          this.listaNomes = this.Nomes;
+        }
+          this.listarAgregadores = this.Agregadoress;
         })
     }
-    this.carregarLista();
+    this.carregaLista();
   }
 
-  confirmaNomes: PoModalAction = {
+  confirmaAgregadores: PoModalAction = {
     action: () => {
       if (this.altera) {
         let Log = {
-          descricao_log: 'Nome com ID: ' + this.nomesId + ' alterado pelo usuario: ' + sessionStorage.getItem('usuario') + ', com ID: ' + sessionStorage.getItem('id'),
+          descricao_log: 'Agregador com ID: ' + this.agregadorId + ' alterar pelo usuario: ' + sessionStorage.getItem('usuario') + ', com ID: ' + sessionStorage.getItem('id'),
           data_log: this.getDataEHoraAtual(),
         }
-        this.nomesObj = {
-          id: this.nomesId,
-          nome: this.nome,
-          funcao: this.funcao,
+        this.agregador = {
+          id: this.agregadorId,
+          nomeAgregadores: this.nomeAgregador,
         }
-        this.listaNomesService
-          .alterarNomes(this.nomesObj)
+        this.listaAgregadoresService
+          .alteraAgregadores(this.agregador)
           .subscribe((res) => {
             this.ListaLogService
               .criarLog(Log)
               .subscribe((res) => {
                 this.ngOnInit();
-                this.modalNomes.close();
-              })
+                this.modalAgregadores.close();
+              });
             this.altera = false;
             this.poNotification.success(res.retorno);
-            this.nome = '';
+
           },
             (err) => {
+              console.log(err);
               this.poNotification.error(err.error.retorno);
-              this.altera = false;
               this.ngOnInit();
-
             })
-
       } else {
         let Log = {
-          descricao_log: 'Nome: ' + this.nome + ' criado pelo usuario: ' + sessionStorage.getItem('usuario') + ', com ID: ' + sessionStorage.getItem('id'),
+          descricao_log: 'Agregador com ID: ' + this.agregadorId + ' criado pelo usuario: ' + sessionStorage.getItem('usuario') + ', com ID: ' + sessionStorage.getItem('id'),
           data_log: this.getDataEHoraAtual(),
         }
-        this.nomesObj = {
-          funcao: this.funcao,
-          nome: this.nome,
+        this.agregador = {
+          nomeAgregadores: this.nomeAgregador,
         }
-        this.listaNomesService
-          .criarNomes(this.nomesObj)
-          .subscribe((res) => {
-            this.ListaLogService
-              .criarLog(Log)
-              .subscribe((res) => {
+        if (this.nomeAgregador != '') {
+          this.listaAgregadoresService
+            .criarAgregador(this.agregador)
+            .subscribe((res) => {
+              this.ListaLogService
+                .criarLog(Log)
+                .subscribe((res) => {
+                  this.ngOnInit();
+                  this.modalAgregadores.close();
+                });
+              this.poNotification.success(res.retorno);
+
+            },
+              (err) => {
+                console.log(err);
+                this.poNotification.error(err.error.retorno);
                 this.ngOnInit();
-                this.modalNomes.close();
               })
-            this.poNotification.success(res.retorno);
-            this.nome = '';
-          },
-            (err) => {
-              this.poNotification.error(err.error.retorno);
-              this.ngOnInit();
-            })
+        } else {
+          this.poNotification.error('Insira o nome da agregador');
+        }
       }
     },
     label: "Confirmar"
   };
+
+  cancelarAgregadores: PoModalAction = {
+    action: () => {
+      this.nomeAgregador = '';
+      this.modalAgregadores.close();
+      this.altera = false;
+    },
+    label: "Cancelar"
+  };
   cancelarNomeTape: PoModalAction = {
     action: () => {
-      this.nome = '';
-      this.funcao = '';
+      this.nomeAgregador = '';
       this.modalNomeTape.close();
       this.altera = false;
     },
     label: "Cancelar"
   };
-  cancelarNomes: PoModalAction = {
-    action: () => {
-      this.nome = '';
-      this.funcao = '';
-      this.modalNomes.close();
-      this.altera = false;
-    },
-    label: "Cancelar"
-  };
-
   Exportacao() {
     this.modalExport.open();
   }
@@ -405,7 +405,7 @@ export class NomesComponent {
   confirmaExportacao: PoModalAction = {
     action: () => {
       this.exportacao
-        .exportData(this.tipoExport, this.listaNomes, this.colunas
+        .exportData(this.tipoExport, this.listarAgregadores, this.colunas
         );
     },
     label: "Confirma"

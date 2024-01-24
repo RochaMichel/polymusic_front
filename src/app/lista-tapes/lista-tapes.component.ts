@@ -22,6 +22,8 @@ export class ListaTapesComponent {
   tipoExport: string = '';
   etiquetaName: string = '';
   gravadoraName: string = '';
+  subiu: string = '';
+  midia: string = '';
   nome_artista!: string;
   nome_etiqueta!: string;
   nome_gravadora!: string;
@@ -84,6 +86,17 @@ export class ListaTapesComponent {
       (params) => (this.tapeId = params["id"])
     );
   }
+  public readonly auditOptions: Array<any> = [
+    { value: '1', label: 'Tape 1/4' },
+    { value: '2', label: 'Tape 1' },
+    { value: '3', label: 'Tape 1/2' },
+    { value: '4', label: 'Tape 2' },
+    { value: '5', label: 'DAT' },
+    { value: '6', label: 'Vinil' },
+    { value: '7', label: 'CD' },
+    { value: '8', label: 'DVD' },
+    { value: '9', label: 'Outros' },
+  ];
   ngOnInit(): void {
      this.listaTapesService
     .carregarTape(this.tapeId)
@@ -100,14 +113,23 @@ export class ListaTapesComponent {
       this.percentualArtistico = resposta.percentual_artistico
       this.novoNumero = resposta.numero_tape
       this.titulo = resposta.titulo
-      this.stream = resposta.stream
-      this.gravadora = resposta.gravadora
-      this.etiqueta = resposta.etiqueta
       this.produtorMusical = resposta.produtor_musical
       this.tipo_tape = resposta.tipo_tape
+      const valoresSeparados = resposta.tipos_midia.split('/').filter(Boolean);
+      const dadosSelecionados = valoresSeparados.map((valor: any) => {
+        const opcaoEncontrada = this.auditOptions.find((opcao) => opcao.value === valor);
+        return opcaoEncontrada ? opcaoEncontrada : null;
+      });
+
+      this.titulo = resposta.titulo
+      if(resposta.stream){
+        this.subiu = 'Sim';
+      }else{
+        this.subiu = 'Não';
+      }
       this.listaMusicaService.buscarMusicaExata(resposta.numero_tape).subscribe((res) => {
         for (let index = 0; index < res.length; index++) {
-          this.Music.push(
+          this.listaMusicas.push(
             {
               id: res[index].id,
               musica: res[index].musica,
@@ -117,7 +139,9 @@ export class ListaTapesComponent {
               acoes: ["1"]
             });
         }
-        this.listaMusicas = this.Music;
+        for( let i = 1; i < dadosSelecionados.length; i++){
+          this.midia += dadosSelecionados[i].label+' - '
+       }
       });
     })
   }

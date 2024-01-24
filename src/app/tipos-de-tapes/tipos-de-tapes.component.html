@@ -1,12 +1,12 @@
 <!-- <po-page-edit p-title="Orçamentos" class="p-m-0"> -->
-<po-page-default p-title="Sessão de tipo de tape">
+<po-page-default p-title="Sessão de tipos de midia">
     <div class="po-row">
-        <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar tipo de tape" [(ngModel)]="TipoDeTapes"
+        <po-input class="po-md-5" name="buscacliente" p-label="Pesquisar tipos de midia" [(ngModel)]="TipoDeTapes"
             (p-change-model)="buscarTiposDeTapes()" p-icon="po-icon po-icon-search">
         </po-input>
 
         <po-button class="po-m-5" style="margin-left: auto" p-label="Exportar" (p-click)="Exportacao()"></po-button>
-        <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir tipo de tape"
+        <po-button *ngIf="criar === 'true'" class="po-m-5" p-label="+ Incluir midia"
             (p-click)="criarTipoDeTapes()" p-type="primary">
         </po-button>
     </div>
@@ -16,20 +16,30 @@
 </po-page-default>
 
 <po-modal #modalTipoDeTapes [p-primary-action]="confirmaTipoDeTapes" [p-secondary-action]="cancelarTipoDeTapes"
-    p-click-out="false" [p-hide-close]="true" p-title="Tipo de Tape">
+    p-click-out="false" [p-hide-close]="true" p-title="Midia">
     <form #ProdutoForm="ngForm">
         <po-divider p-label="Dados gerais"></po-divider>
         <div class="po-row">
-            <po-input class="po-md-2" name="codigo" p-label="Codigo" [(ngModel)]="codigo"></po-input>
-            <po-input class="po-md-12" name="descricao" p-label="Descrição" [(ngModel)]="descricao"></po-input>
+            <po-input class="po-md-12" name="descricao" p-label="Midia" [(ngModel)]="descricao"></po-input>
+            <po-button class="po-m-4"  p-label="Incluir Tipos" (p-click)="IncluirDetail()"></po-button>
         </div>
+        <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true"
+        [p-striped]="true" p-container="light" [p-columns]="columns" [p-items]="listaDetail" p-container="shadow"></po-table>
     </form>
 </po-modal>
+<po-modal #modalDetail [p-primary-action]="confirmaDetail" [p-secondary-action]="cancelarDetail" p-click-out="false"
+        [p-hide-close]="true" p-title="Tipo">
+        <form #ProdutoForm="ngForm">
+            <po-divider p-label="Dados gerais"></po-divider>
+            <div class="po-row">
+                <po-input class="po-md-2" name="categoria" p-label="Tipo"   [(ngModel)]="tipo"  ></po-input>
+            </div>
+        </form>
+    </po-modal>
 <po-modal #modalNomeTape p-size="xl" p-click-out="false" [p-hide-close]="true" p-title="Tipo de Tape">
     <form #ProdutoForm="ngForm">
         <po-divider p-label="Dados gerais"></po-divider>
         <div class="po-row">
-            <po-input class="po-md-2" name="codigo" p-label="Codigo" p-disabled="true" [(ngModel)]="codigo"></po-input>
             <po-input class="po-md-12" name="descricao" p-label="Descrição" p-disabled="true"
                 [(ngModel)]="descricao"></po-input>
         </div>
@@ -49,6 +59,10 @@
                         <td contenteditable="false">{{ this.titulo }}</td>
                     </tr>
                     <tr>
+                        <td>Numero do tape:</td>
+                        <td contenteditable="false">{{ this.novoNumero }}</td>
+                    </tr>
+                    <tr>
                         <td>Artista:</td>
                         <td contenteditable="false">{{ this.artista }}</td>
                     </tr>
@@ -63,6 +77,14 @@
                     <tr>
                         <td>Produtor Musical:</td>
                         <td contenteditable="false">{{ this.produtorMusical }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tipos de midia:</td>
+                        <td contenteditable="false">{{ this.midia }}</td>
+                    </tr>
+                    <tr>
+                        <td>Subiu para o streaming:</td>
+                        <td contenteditable="false">{{ this.subiu }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -95,10 +117,12 @@
     <form #ProdutoForm="ngForm">
         <po-divider p-label="Dados gerais"></po-divider>
         <div class="po-row">
-            <po-input class="po-md-2" name="codigo" p-label="Codigo" p-disabled="true" [(ngModel)]="codigo"></po-input>
             <po-input class="po-md-12" name="descricao" p-label="Descrição" p-disabled="true"
                 [(ngModel)]="descricao"></po-input>
         </div>
+        <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true"
+        [p-striped]="true" p-container="light" [p-columns]="columns" [p-items]="listaDetail" p-container="shadow"></po-table>
+        
     </form>
 </po-modal>
 
