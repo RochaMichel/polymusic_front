@@ -31,13 +31,11 @@
             placeholderSearch="nome"
             p-field-label="nome"
             p-field-value="id"
-            p-filter-service="http://localhost:3000/consultarNomes"
+            p-filter-service="http://192.168.2.15:3000/consultarNomes"
             p-label="Carregar Artista"
           >
           </po-lookup>
            <po-input *ngIf="altera" class="po-md-12" name="artista" [(ngModel)]="artista" p-label="Artista"></po-input>
-            <po-combo class="po-md-6" name="gravadora" p-label="Tipo de tape" [ngModel]="tipo_tape"
-                (ngModelChange)="tipo_tape = $event" [p-options]="Tipo_tape"></po-combo>
             <po-combo class="po-md-6" name="etiqueta" p-label="Etiqueta" [ngModel]="etiqueta"
                 (ngModelChange)="etiqueta = $event" [p-options]="Etiqueta"> </po-combo>
             <po-combo class="po-md-12" name="gravadora" p-label="Gravadora" [ngModel]="gravadora"
@@ -170,15 +168,13 @@
             p-label="Produtor musical"></po-input>
         <po-input class="po-md-6" name="novoNumero" p-disabled="true" [(ngModel)]="novoNumero"
             p-label="Numero Tape"></po-input>
-        <po-combo class="po-md-6" name="tipo_tape" p-label="Tipo de tape" [p-disabled]="true" [ngModel]="tipo_tape"
-            (ngModelChange)="tipo_tape = $event" [p-options]="Tipo_tape"></po-combo>
             <po-switch class="po-md-4" [p-disabled]="true" name="stream" p-label="On stream" [(ngModel)]="stream"> </po-switch>
             <po-switch class="po-md-4" [p-disabled]="true" name="notstream" p-label="Not stream" [(ngModel)]="notStream"> </po-switch>
             <po-switch class="po-md-4" [p-disabled]="true" name="midia" p-label="Midia digitalizada" [(ngModel)]="midiaDigital"> </po-switch>
             <po-checkbox-group *ngIf="stream" [p-disabled]="true" class="po-lg-12" name="agregadoresss" p-label="Selecione o(s) agregador(es)" [p-options]="agregadorOptions"
             [ngModel]="agregadoresMarcados" (ngModelChange)="agregadoresMarcados = $event">
             </po-checkbox-group>
-
+        
             <po-table [p-hide-columns-manager]="true" [p-hide-table-search]="true" [p-sort]="true"
             [p-striped]="true" p-container="light" [p-columns]="columns" [p-items]="listaMusicas" p-container="shadow"></po-table>
     </div>

@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     if(sessionStorage.getItem('token')) {
-      this.router.navigate(['/tapes']);
+      this.router.navigate(['/grafico']);
     }
   }
 

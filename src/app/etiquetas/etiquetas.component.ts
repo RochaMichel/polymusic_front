@@ -328,7 +328,7 @@ export class EtiquetasComponent {
         }
         this.etiqueta = {
           id: this.etiquetaId,
-          nome_etiqueta: this.nome_etiqueta,
+          nome_etiqueta: this.nome_etiqueta.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
         }
         this.listaEtiquetasService
           .alteraEtiqueta(this.etiqueta)

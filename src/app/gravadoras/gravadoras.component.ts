@@ -337,7 +337,7 @@ export class GravadorasComponent {
         }
         this.gravadora = {
           id: this.gravadoraId,
-          nome_gravadora: this.nome_gravadora,
+          nome_gravadora: this.nome_gravadora.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
         }
         this.listaGravadorasService
           .alteraGravadora(this.gravadora)

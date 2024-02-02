@@ -327,8 +327,8 @@ export class NomesComponent {
         }
         this.nomesObj = {
           id: this.nomesId,
-          nome: this.nome,
-          funcao: this.funcao,
+          nome: this.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
+          funcao: this.funcao.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
         }
         this.listaNomesService
           .alterarNomes(this.nomesObj)

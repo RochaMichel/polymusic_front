@@ -1,11 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
-import { PoChartType, PoChartOptions, PoChartSerie, PoDialogService, PoTableColumn, PoNotificationService, PoModalComponent, PoRadioGroupOption } from '@po-ui/ng-components';
+import { PoChartType, PoChartOptions, PoChartSerie, PoDialogService, PoTableColumn, PoNotificationService, PoModalComponent, PoRadioGroupOption, PoModalAction } from '@po-ui/ng-components';
 import { ListaDeTapesService } from '../tapes/tapes.service';
 import { ListaDeGravadorasService } from '../gravadoras/gravadoras.service';
 import { ListaDeTiposDeTapesService } from '../tipos-de-tapes/tipos-de-tapes.service';
 import { ListaDeNomesService } from '../nomes/nomes.service';
 import { ListaDeEtiquetasService } from '../etiquetas/etiquetas.service';
 import { ListaDeMusicaService } from '../musicas/musicas.service';
+import { Exportacao } from '../exportacao/exportacao.service';
 
 @Component({
   selector: 'app-grafico',
@@ -18,6 +19,7 @@ export class GraficoComponent {
     private listaTapesService: ListaDeTapesService,
     private poNotification: PoNotificationService,
     private listaNomesService: ListaDeNomesService,
+    private exportacao: Exportacao,
     private listaGravadorasService: ListaDeGravadorasService,
     private listaEtiquetasService: ListaDeEtiquetasService,
     private listaTiposDeTapesService: ListaDeTiposDeTapesService,
@@ -86,8 +88,9 @@ export class GraficoComponent {
   dataDeLancamento!: Date | undefined;
   observacao!: string;
   columns: string = '';
-  filtro: string = '';
+  filtro: string = 'OFF';
   conteudoDigitado: string = '';
+  conteudoSuperDigitado: string = '';
   smi!: string;
   prateleira!: string;
   descricao!: string;
@@ -96,6 +99,7 @@ export class GraficoComponent {
 
   @ViewChild('modalExibeTape', { static: true }) modalExibeTape!: PoModalComponent;
   @ViewChild('exibeLista', { static: true }) exibeLista!: PoModalComponent;
+  @ViewChild('modalSuper', { static: true }) modalSuper!: PoModalComponent;
   
   ngOnInit(): void {
     this.consultaTapes();
@@ -108,9 +112,18 @@ export class GraficoComponent {
     { label: "Gravadora", value: "gravadora" },
     { label: "Artista", value: "artista" },
   ];
+  public readonly colunasSuper: Array<PoTableColumn> = [
+    { property: "funcao", label: "Funcao", width: "45%" },
+    { property: "novoNumero", label: "Numero tape", width: "20%" },
+    { property: "titulo", label: "Titulo", width: "40%" },
+    { property: "artista", label: "Artista", width: "40%" },
+  ];
+
+
   public readonly colunas: Array<PoTableColumn> = [
     { property: "titulo", label: "Titulo", width: "45%" },
-    { property: "novoNumero", label: "Numero tape", width: "45%" },
+    { property: "novoNumero", label: "Numero tape", width: "20%" },
+    { property: "artista", label: "Artista", width: "40%" },
     {
       property: "acoes",
       label: "Ações",
@@ -187,7 +200,7 @@ export class GraficoComponent {
       }
       this.listaTapesService.stream(tapes).subscribe((res) =>{
         this.resultado = false;
-        this.filtro = ''
+        this.filtro = 'OFF'
         this.listaFiltro = '' 
         this.conteudoDigitado = ''
         this.poNotification.success(res.retorno);
@@ -198,8 +211,11 @@ export class GraficoComponent {
       })
     }
   }
+  async abrirSuper() {
+    this.conteudoSuperDigitado = '';
+    this.modalSuper.open();
+  }
   async Pesquisar() {
-    this.isHideLoading = false;
     if(this.filtro === 'OFF'){
       this.subirTape = true;
     }else{
@@ -208,6 +224,7 @@ export class GraficoComponent {
     this.Tapes = [];
     this.listaTapesN = [];
     if (this.filtro) {
+      this.isHideLoading = false;
       await this.listaTapesService
         .consultaDeTapes(this.filtro, this.listaFiltro, this.conteudoDigitado)
         .subscribe((res) => {
@@ -217,15 +234,18 @@ export class GraficoComponent {
                 id: res[index].id,
                 titulo: res[index].titulo,
                 novoNumero: res[index].numero_tape,
+                artista: res[index].Nome.nome,
                 acoes: ["1"]
               });
-          }
+           }
           this.listaTapesN = this.Tapes
           this.resultado = true
           this.isHideLoading = true
         },
           (err) => {
             this.poNotification.error(err.error.retorno);
+            this.resultado = true
+            this.isHideLoading = true
 
           });
     } else {
@@ -290,7 +310,31 @@ export class GraficoComponent {
         this.modalExibeTape.open();
       })
   }
+  confirmaSuper: PoModalAction = {
+    action: () => {
+      if(this.conteudoDigitado){
+        this.listaTapesService
+        .buscaSuper(this.conteudoDigitado)
+        .subscribe( (resposta) =>{
+          this.exportacao
+          .exportData('pdf', resposta, this.colunasSuper
+          );
+      })
+      }else{
+        this.poNotification.information('informe o nome para pesquisa')
+      }
+    },
+    label: 'Pesquisar'
+  }
+  cancelaSuper: PoModalAction = {
+    action: () => {
+      this.conteudoSuperDigitado = '';
+      this.modalSuper.close();
 
+    },
+    label: "Cancelar"
+  };
+  
   async consultaTapes() {
     this.listaTapesService
       .listaTapesSteam()

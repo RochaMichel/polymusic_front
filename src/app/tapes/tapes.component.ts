@@ -211,11 +211,9 @@ export class TapesComponent {
   }
 
   public readonly colunas: Array<PoTableColumn> = [
-    { property: "id", label: "ID", width: "10%" },
     { property: "titulo", label: "Titulo", width: "45%" },
     { property: "novoNumero", label: "Numero tape", width: "20%" },
-    { property: "genero", label: "Genero", width: "20%" },
-    { property: "tipo_tape", label: "Tipo do tape", width: "20%" },
+    { property: "artista", label: "Artista", width: "20%" },
     {
       property: 'status',
       type: 'label',
@@ -688,31 +686,41 @@ export class TapesComponent {
     this.Tapes = [];
     this.listaTapes = [];
     var status = ''
+    var artista = ''
     await this.listaTapesService
       .listaTapes()
-      .subscribe((resposta) => {
+      .subscribe(async (resposta) => {
         for (let index = 0; index < resposta.length; index++) {
           status = ''
+          artista = ''
           if (resposta[index].bloqueado === 'N') {
-            if (resposta[index].stream) {
-              status = 'on'
-            } else if (resposta[index].midiaDigital) {
-              status = 'digital'
-            } else if (!resposta[index].stream && resposta[index].notStream) {
-              status = 'not'
-            } else if (!resposta[index].stream && !resposta[index].notStream && !resposta[index].midiaDigital) {
-              status = 'off'
-            }
-            this.Tapes.push(
-              {
-                id: resposta[index].id,
-                titulo: resposta[index].titulo,
-                tipo_tape: resposta[index].Tipos_de_tape.descricao,
-                novoNumero: resposta[index].numero_tape,
-                status: status,
-                acoes: ["1", "2", "3", "4"]
+            
+           await this.listaNomesService
+            .buscarNomesExato(resposta[index].artista)
+            .subscribe((res) => { 
+              if (resposta[index].stream) {
+                status = 'on'
+              } else if (resposta[index].midiaDigital) {
+                status = 'digital'
+              } else if (!resposta[index].stream && resposta[index].notStream) {
+                status = 'not'
+              } else if (!resposta[index].stream && !resposta[index].notStream && !resposta[index].midiaDigital) {
+                status = 'off'
               }
-            )
+              artista = res[0].nome   
+              this.Tapes.push(
+                {
+                  id: resposta[index].id,
+                  titulo: resposta[index].titulo,
+                  novoNumero: resposta[index].numero_tape,
+                  artista: artista,
+                  status: status,
+                  acoes: ["1", "2", "3", "4"]
+                }
+              )
+            })
+            
+            
           }
         }
         this.listaTapes = this.Tapes;
@@ -782,15 +790,15 @@ export class TapesComponent {
         this.listaMusicas.push({ numero_tape: this.novoNumero })
         let tape = {
           id: this.tapeId,
-          numero_tape: this.novoNumero,
-          titulo: this.titulo,
+          numero_tape: this.novoNumero.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
+          titulo: this.titulo.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
           artista: this.Artista,
           gravadora: this.gravadora,
           etiqueta: this.etiqueta,
           stream: this.stream,
           midiaDigital: this.midiaDigital,
           notStream: this.notStream,
-          produtor_musical: this.produtorMusical,
+          produtor_musical: this.produtorMusical.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
           tipo_tape: this.tipo_tape,
           tipos_midia: tipomidia,
           agregadores: agregaMark,
@@ -858,8 +866,8 @@ export class TapesComponent {
           data_log: this.getDataEHoraAtual(),
         }
         let tape = {
-          numero_tape: this.novoNumero,
-          titulo: this.titulo,
+          numero_tape: this.novoNumero.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
+          titulo: this.titulo.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
           artista: this.Artista,
           gravadora: this.gravadora,
           tipo_tape: this.tipo_tape,
@@ -868,7 +876,7 @@ export class TapesComponent {
           midiaDigital: this.midiaDigital,
           notStream: this.notStream,
           tipos_midia: tipomidia,
-          produtor_musical: this.produtorMusical,
+          produtor_musical: this.produtorMusical.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
           agregadores: agregaMark,
         }
         let tapeAcer = {
@@ -975,7 +983,7 @@ export class TapesComponent {
 
   async abrirQRCode() {
     const tapeID = this.tapeId
-    let texto = 'http://192.168.0.15:4200/lista-tapes/';
+    let texto = 'http://192.168.2.15:4200/lista-tapes/';
     const url = `${texto}${tapeID}`;
     this.generateQRCode(url);
     this.modalQRCode.open();
@@ -1019,10 +1027,10 @@ export class TapesComponent {
       if (!this.musicaAltera) {
         this.listaMusicas.push({
           faixa: this.faixa,
-          lado: this.lado,
-          musica: this.nome_musica,
-          genero: this.genero,
-          autor: this.autor,
+          lado: this.lado.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
+          musica: this.nome_musica.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
+          genero: this.genero.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
+          autor: this.autor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
           numero_tape: this.novoNumero,
           acoes: ['1']
         });

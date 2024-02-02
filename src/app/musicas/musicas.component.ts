@@ -361,11 +361,11 @@ export class MusicaComponent {
           data_log: this.getDataEHoraAtual(),
         }
         this.musica = {
-          musica: this.nomeMusica,
-          autor: this.autor,
+          musica: this.nomeMusica.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
+          autor: this.autor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
           faixa: this.faixa,
-          genero: this.genero,
-          lado: this.lado,
+          genero: this.genero.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
+          lado: this.lado.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(),
           numero_tape: this.numeroTape,
         }
         if (this.nomeMusica != '' && this.numeroTape != ' ') {

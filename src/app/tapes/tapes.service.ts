@@ -19,6 +19,7 @@ export class ListaDeTapesService {
   urllistaconsultaEspecificaTapeTotal = `${environment.API}consultaEspecificaTape`;
   urlExcluirTape = `${environment.API}excluirTape`;
   urlBuscarTape = `${environment.API}buscarTape`;
+  urlbuscaSuper = `${environment.API}buscarSuper`;
   urlBuscarTapeExato = `${environment.API}buscarTapeExato`;
   urlBuscarTapeExato1 = `${environment.API}buscarTapeExato1`;
   urlCarregarTape = `${environment.API}carregarTape`;
@@ -51,6 +52,12 @@ export class ListaDeTapesService {
   buscarTapeNome(nome: any): Observable <any> {
     return this.http.get(
       this.urlbuscaTapesNomes+"?tapes="+nome,
+      { headers: this.headers }
+    );
+  }
+  buscaSuper(nome: any): Observable <any> {
+    return this.http.get(
+      this.urlbuscaSuper+"?super="+nome,
       { headers: this.headers }
     );
   }

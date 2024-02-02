@@ -78,9 +78,9 @@ export class AppComponent {
   }
   tape(): string {
     let link = ''
-    if (sessionStorage.getItem('lvisualiza_tapes')=== 'true') {
-    link = "/tapes"
-    }
+  
+    link = "/grafico"
+  
     return link
   }
   readonly menus: Array<PoMenuItem> = [

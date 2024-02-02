@@ -1,7 +1,8 @@
 <div>
     <po-loading-overlay [hidden]="isHideLoading"></po-loading-overlay>
   </div>
-<po-page-default p-title="Dashboard">
+<po-page-default p-title="Dashboard"> 
+    <po-button class="po-m-5"  p-label="Super pesquisa" (p-click)="abrirSuper()"  p-type="primary"> </po-button>
     <div class="po-row">
         <po-widget class="po-md-3" [p-height]="130">
             <div style="color: green;" class="po-font-subtitle po-text-center po-pt-1"> On stream
@@ -66,7 +67,10 @@
         </po-widget>
     </div>-->
 </po-page-default>
-
+<po-modal #modalSuper [p-primary-action]="confirmaSuper" [p-secondary-action]="cancelaSuper" p-click-out="false" [p-hide-close]="true" p-title="Super pesquisa">
+    <po-input class="po-md-12" name="conteudoDigitado" [(ngModel)]="conteudoSuperDigitado"
+            p-label="Escreva o conteudo para pesquisar"></po-input>
+</po-modal>
 <po-modal #modalExibeTape p-size="xl" p-click-out="false" [p-hide-close]="true" p-title="Tape">
     <div class="wrapper">
         <h1>PolyMusic</h1>
